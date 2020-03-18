@@ -42,75 +42,77 @@
 
       <nav class="sidebar-navigation">
         <ul class="menu">
+            @auth
 
-          <li class="menu-category">Category 1</li>
+                <li class="menu-category">Category 1</li>
 
-          <li class="menu-item active">
-            <a class="menu-link" href="../dashboard/general.html">
-              <span class="icon fa fa-home"></span>
-              <span class="title">Dashboard</span>
-            </a>
-          </li>
-
-          <li class="menu-item">
-            <a class="menu-link" href="#">
-              <span class="icon fa fa-user"></span>
-              <span class="title">Users</span>
-              <span class="arrow"></span>
-            </a>
-
-            <ul class="menu-submenu">
-              <li class="menu-item">
-                <a class="menu-link" href="#">
-                  <span class="dot"></span>
-                  <span class="title">Moderators</span>
+                <li class="menu-item active">
+                <a class="menu-link" href="../dashboard/general.html">
+                    <span class="icon fa fa-home"></span>
+                    <span class="title">Dashboard</span>
                 </a>
-              </li>
+                </li>
 
-              <li class="menu-item">
+                <li class="menu-item">
                 <a class="menu-link" href="#">
-                  <span class="dot"></span>
-                  <span class="title">Customers</span>
+                    <span class="icon fa fa-user"></span>
+                    <span class="title">Users</span>
+                    <span class="arrow"></span>
                 </a>
-              </li>
-            </ul>
-          </li>
+
+                <ul class="menu-submenu">
+                    <li class="menu-item">
+                    <a class="menu-link" href="#">
+                        <span class="dot"></span>
+                        <span class="title">Moderators</span>
+                    </a>
+                    </li>
+
+                    <li class="menu-item">
+                    <a class="menu-link" href="#">
+                        <span class="dot"></span>
+                        <span class="title">Customers</span>
+                    </a>
+                    </li>
+                </ul>
+                </li>
 
 
 
-          <li class="menu-category">Category 2</li>
+                <li class="menu-category">Category 2</li>
 
 
-          <li class="menu-item">
-            <a class="menu-link" href="#">
-              <span class="icon ti-layout"></span>
-              <span class="title">Layout</span>
-              <span class="arrow"></span>
-            </a>
-
-            <ul class="menu-submenu">
-              <li class="menu-item">
+                <li class="menu-item">
                 <a class="menu-link" href="#">
-                  <span class="dot"></span>
-                  <span class="title">Sidebar</span>
+                    <span class="icon ti-layout"></span>
+                    <span class="title">Layout</span>
+                    <span class="arrow"></span>
                 </a>
-              </li>
 
-              <li class="menu-item">
-                <a class="menu-link" href="#">
-                  <span class="dot"></span>
-                  <span class="title">Header</span>
-                </a>
-              </li>
+                <ul class="menu-submenu">
+                    <li class="menu-item">
+                    <a class="menu-link" href="#">
+                        <span class="dot"></span>
+                        <span class="title">Sidebar</span>
+                    </a>
+                    </li>
 
-              <li class="menu-item">
-                <a class="menu-link" href="#">
-                  <span class="dot"></span>
-                  <span class="title">Footer</span>
-                </a>
-              </li>
-            </ul>
-          </li>
+                    <li class="menu-item">
+                    <a class="menu-link" href="#">
+                        <span class="dot"></span>
+                        <span class="title">Header</span>
+                    </a>
+                    </li>
+
+                    <li class="menu-item">
+                    <a class="menu-link" href="#">
+                        <span class="dot"></span>
+                        <span class="title">Footer</span>
+                    </a>
+                    </li>
+                </ul>
+                </li>
+            @endauth
 
         </ul>
       </nav>
