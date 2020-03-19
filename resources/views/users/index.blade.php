@@ -7,6 +7,9 @@
                 <strong>Usuarios</strong>
                 <small>Usuarios del sistema Truman.</small>
             </h1>
+            <div class="d-flex p-4">
+                <a class="btn btn-float btn-primary" title="Agregar Usuario" href="{{ route('users.create') }}"><i class="ti-plus"></i></a>
+            </div>
         </div>
     </header>
     <!--/.header -->
