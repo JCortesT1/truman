@@ -26,7 +26,7 @@
     data-overlay="7">
 
     <div class="card card-round card-shadowed px-50 py-30 w-400px mb-0" style="max-width: 100%">
-        <h5 class="text-uppercase">Sign in</h5>
+    <h5 class="text-uppercase d-flex justify-content-center pt-2">TRUMAN</h5>
         <br>
 
         <form method="POST" class="form-type-material" action="{{ route('login') }}">
@@ -35,22 +35,22 @@
                 <input type="email" id="email" class="form-control @error('email') is-invalid @enderror" name="email"
                     value="{{ old('email') }}" required autocomplete="email">
                 <label for="username">{{ __('E-Mail Address') }}</label>
-                {{-- @error('email')
+                @error('email')
             <span class="invalid-feedback" role="alert">
                 <strong>{{ $message }}</strong>
                 </span>
-                @enderror --}}
+                @enderror
             </div>
 
             <div class="form-group">
                 <input type="password" class="form-control @error('password') is-invalid @enderror" name="password"
                     required autocomplete="current-password" id="password">
                 <label for="password">{{ __('Password') }}</label>
-                {{-- @error('password')
+                @error('password')
             <span class="invalid-feedback" role="alert">
                 <strong>{{ $message }}</strong>
                 </span>
-                @enderror --}}
+                @enderror
             </div>
 
             <div class="form-group">

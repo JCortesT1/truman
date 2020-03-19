@@ -44,37 +44,20 @@
         <ul class="menu">
             @auth
 
-                <li class="menu-category">Category 1</li>
+                <li class="menu-category">Administración</li>
 
-                <li class="menu-item active">
-                <a class="menu-link" href="../dashboard/general.html">
+                <li class="menu-item {{ setActive('home') }}">
+                <a class="menu-link" href="{{ route('home') }}">
                     <span class="icon fa fa-home"></span>
                     <span class="title">Dashboard</span>
                 </a>
                 </li>
 
-                <li class="menu-item">
-                <a class="menu-link" href="#">
+                <li class="menu-item {{ setActive('users.*') }}">
+                <a class="menu-link" href="{{ route('users.index') }}">
                     <span class="icon fa fa-user"></span>
-                    <span class="title">Users</span>
-                    <span class="arrow"></span>
+                    <span class="title">Usuarios</span>
                 </a>
-
-                <ul class="menu-submenu">
-                    <li class="menu-item">
-                    <a class="menu-link" href="#">
-                        <span class="dot"></span>
-                        <span class="title">Moderators</span>
-                    </a>
-                    </li>
-
-                    <li class="menu-item">
-                    <a class="menu-link" href="#">
-                        <span class="dot"></span>
-                        <span class="title">Customers</span>
-                    </a>
-                    </li>
-                </ul>
                 </li>
 
 
@@ -129,8 +112,11 @@
 
         <div class="topbar-right">
             <div>
-                <a class="btn btn-sm btn-outline btn-primary" href="{{ Auth::logout() }}" >{{ __('Logout') }}</a>
+                <a class="btn btn-sm btn-outline btn-primary" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('Logout') }}</a>
             </div>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
         </div>
     </header>
     <!-- END Topbar -->
@@ -138,10 +124,7 @@
 
     <!-- Main container -->
     <main class="main-container">
-      <div class="main-content">
-        @yield('content')
-      </div><!--/.main-content -->
-
+      @yield('content')
 
       <!-- Footer -->
       <footer class="site-footer">
@@ -156,18 +139,6 @@
 
     </main>
     <!-- END Main container -->
-
-
-
-    <!-- Global quickview -->
-    <div id="qv-global" class="quickview" data-url="assets/data/quickview-global.html">
-      <div class="spinner-linear">
-        <div class="line"></div>
-      </div>
-    </div>
-    <!-- END Global quickview -->
-
-
 
     <!-- Scripts -->
     <script src="/assets/js/core.min.js"></script>
