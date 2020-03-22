@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Users;
 
+use Illuminate\Support\Facades\DB;
 use App\Role;
 use App\User;
 
@@ -9,7 +10,9 @@ class EloquentUsers implements UsersInterface
 {
     public function getPaginated()
     {
-        return User::with(['role'])
+        $users = DB::table('usuario')->get()->paginate(5);
+        return $users;
+        return User::with(['role', 'sucursal'])
             ->orderBy('created_at', request('sorted', 'ASC'))
             ->paginate(5);
     }
