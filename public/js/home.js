@@ -1,6 +1,7 @@
 app.ready(function () {
+
     $("#jsgrid-basic").jsGrid({
-        height: "600px",
+        height: "100%",
         width: "100%",
         filtering: true,
         inserting: false,
@@ -8,7 +9,7 @@ app.ready(function () {
         sorting: true,
         paging: true,
         autoload: true,
-        pageSize: 10,
+        pageSize: 8,
         pageButtonCount: 5,
         controller: db,
         fields: [
@@ -30,7 +31,7 @@ app.ready(function () {
                         .attr({ class: "btn btn-info btn-sm" })
                         .attr({ title: "Ver Stock" })
                         .click(function (e) {
-                            alert("Stock: " + item.id_producto);
+                            alert("Stock Disponible: 10");
                             e.stopPropagation();
                         });
 
@@ -41,65 +42,111 @@ app.ready(function () {
         rowClick: function (args) {
             console.log(args.item)
             var element = args.item;
-            var keys = Object.keys(element);
-            var text = [];
 
             if ($("#element-" + element.id_producto).length) {
-                addQuantity(element);
+                setQuantity(element.id_producto, "add");
             } else {
                 newElement(element);
             }
         }
     });
 
-    function newElement(element) {
-        $('#list').append(
-            "<div id='element-" + element.id_producto + "' class='media flexbox flex-justified'>" +
-                "<div class='btn-group-vertical'>" +
-                    "<button onclick='btnUp(" + element.id_producto + ")' class='btn btn-pure btn-primary p-0'><i class='fa fa-plus-square fa-2x'></i></button>" +
-                    "<button onclick='btnDown(" + element.id_producto + ")' class='btn btn-pure btn-primary p-0'><i class='fa fa-minus-square fa-2x'></i></button>" +
-                "</div>" +
-                "<input class='quantity' type='number' id='quantity-" + element.id_producto + "' value='1' min='1'>" +
-                "<div class='my-auto flex-grow-4'>" +
-                    "<h5 class'm-0'>" + element.descripcion + "</h5>" +
-                    "<p class='m-0'>$/unidad: $ " + element.precio + "</p>" +
-                "</div>" +
-                "<div class='form-group my-auto'>" +
-                    "<select class='form-control' id='select'>" +
-                        "<option>1</option>" +
-                        "<option>2</option>" +
-                        "<option>3</option>" +
-                        "<option>4</option>" +
-                        "<option>5</option>" +
-                    "</select>" +
-                "</div>" +
-                "<h6 class='my-auto'>$ " + element.precio + "</h6>" +
-                "<a class='btn btn-pure btn-danger p-0 my-auto w-50'><i class='fa fa-trash-o fa-2x'></i></a>" +
-            "</div>"
-        );
-    }
 
-    function addQuantity(element) {
-        $("#element-" + element.id_producto).find("input").val(function (i, val) {
-            return ++val;
-        });
-    }
 });
 
-function btnUp(element) {
-    var quantity = "#quantity-" + element;
-    $(quantity).val(function (i, val) {
-        return ++val;
+function newElement(element) {
+    $('#list').append(
+        $("<div id='element-" + element.id_producto + "' class='media flexbox flex-justified'>" +
+            "<div class='btn-group-vertical'>" +
+            "<button onclick='setQuantity(" + element.id_producto + ", &#39;add&#39;)' class='btn btn-pure btn-primary p-0'><i class='fa fa-plus-square fa-2x'></i></button>" +
+            "<button onclick='setQuantity(" + element.id_producto + ", &#39;substract&#39;)' class='btn btn-pure btn-primary p-0'><i class='fa fa-minus-square fa-2x'></i></button>" +
+            "</div>" +
+            "<input class='quantity' type='number' value='1' min='1'>" +
+            "<div class='my-auto flex-grow-2'>" +
+                "<h5 class'm-0'>" + element.descripcion + "</h5>" +
+                "<p class='m-0'>$/unidad: $ <strong>" + (element.precio/1000).toFixed(3) + "</strong></p>" +
+            "</div>" +
+            "<div class='form-group my-auto'>" +
+                "<select class='form-control' onchange='setDiscount(this, " + element.id_producto + ")'>" +
+                    "<option value='0'>0 %</option>" +
+                    "<option value='5'>5 %</option>" +
+                    "<option value='7'>7 %</option>" +
+                    "<option value='10'>10 %</option>" +
+                    "<option value='15'>15 %</option>" +
+                    "<option value='20'>20 %</option>" +
+                    "<option value='25'>25 %</option>" +
+                    "<option value='30'>30 %</option>" +
+                    "<option value='35'>35 %</option>" +
+                    "<option value='40'>40 %</option>" +
+                "</select>" +
+            "</div>" +
+            "<h6 class='my-auto'>$ <strong>" + (element.precio / 1000).toFixed(3) + "</strong></h6>" +
+            "<a class='btn btn-pure btn-danger p-0 my-auto mx-0' onclick='deleteElement(" + element.id_producto + ")'><i class='fa fa-trash-o fa-2x'></i></a>" +
+            "</div>"
+        ).hide().fadeIn()
+    );
+
+    calculateTotal();
+}
+
+function setQuantity(element, action) {
+    var item = $("#element-" + element);
+    var quantity = item.find('input');
+    var price = item.find('p').find('strong').text() * 1000;
+    var discount = 1 - item.find('select').children('option:selected').val() / 100;
+
+    if (action === "add") {
+        if (quantity.val() < 10) {
+            quantity.val(function (i, val) {
+                return ++val;
+            });
+        } else {
+            alert('No posee stock disponible');
+        }
+    } else {
+        if (quantity.val() > 1) {
+            quantity.val(function (i, val) {
+                return --val;
+            });
+        }
+    }
+
+    item.find('h6').find('strong').text((price * quantity.val()/1000 * discount).toFixed(3));
+
+    calculateTotal();
+}
+
+function deleteElement(element) {
+    $("#element-" + element).fadeOut("slow", function () {
+        $(this).remove();
+        calculateTotal();
     });
 }
 
-function btnDown(element) {
-    var quantity = "#quantity-" + element;
-    if ($(quantity).val() > 1)
-    {
-        $(quantity).val(function (i, val) {
-            return --val;
-        });
-    }
+function setDiscount(select, element) {
+    var item = $("#element-" + element);
+    var quantity = item.find('input');
+    var price = item.find('p').find('strong').text() * 1000;
+    var discount = 1 - select.value / 100;
+
+    item.find('h6').find('strong').text((price * quantity.val() / 1000 * discount).toFixed(3));
+
+    calculateTotal();
+}
+
+function calculateTotal() {
+    var total = 0;
+
+    $('h6').find('strong').each(function(index){
+        console.log($(this).text() * 1000);
+        total += $(this).text() * 1000;
+    });
+
+    $('#total').val(total);
+}
+
+function listEmpty() {
+    $('#list').empty();
+    calculateTotal();
 }
 

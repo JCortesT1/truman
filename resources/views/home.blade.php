@@ -6,16 +6,26 @@
         <header class="card-header">
             <h4 class="card-title"><strong>Caja</strong></h4>
         </header>
-        <div id="list" style="height: 600px;" class="media-list media-list-divided media-list-hover">
+        <div id="list" style="height: 600px;" class="media-list media-list-divided media-list-hover overflow-auto">
 
         </div>
-        <footer class="card-footer flexbox">
-            <div>
-                <button class="btn btn-outline btn-danger btn-sm">Cancelar <i class="fa fa-close"></i></button>
-                <button class="btn btn-outline btn-primary btn-sm">Guardar borrador <i class="fa fa-save"></i></button>
+        <footer class="card-footer">
+            <div class="row justify-content-end">
+                <div style="text-align: end" class="col-3 my-auto">
+                    <h6>Total :</h6>
+                </div>
+                <div class="col-3 p-0">
+                    <input style="text-align: end" class="form-control mb-2" type="number" id="total" value="0" readonly>
+                </div>
             </div>
-            <div class="text-right flex-grow">
-                <button class="btn btn-primary btn-sm">Pagar <i class="fa fa-check"></i></button>
+            <div class="row">
+                <div>
+                    <button class="btn btn-outline btn-danger btn-sm" onclick="listEmpty()">Cancelar <i class="fa fa-close"></i></button>
+                    <button class="btn btn-outline btn-primary btn-sm">Guardar borrador <i class="fa fa-save"></i></button>
+                </div>
+                <div class="text-right flex-grow">
+                    <button class="btn btn-primary btn-sm">Pagar <i class="fa fa-check"></i></button>
+                </div>
             </div>
         </footer>
     </div>
@@ -23,7 +33,7 @@
         <h4 class="card-title"><strong>Libros</strong></h4>
 
         <div class="card-body">
-            <div id="jsgrid-basic" data-provide="jsgrid"></div>
+            <div class="overflow-auto" id="jsgrid-basic" data-provide="jsgrid" ></div>
         </div>
     </div>
 </div>
