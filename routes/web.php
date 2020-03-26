@@ -24,3 +24,7 @@ Route::resource('users', 'UserController');
 Route::resource('roles', 'RoleController');
 Route::resource('products', 'ProductController');
 
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

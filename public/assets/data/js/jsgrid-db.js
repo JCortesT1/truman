@@ -8,7 +8,8 @@
                     && (!filter.editorial.nombre || product.editorial.nombre.toLowerCase().indexOf(filter.editorial.nombre.toLowerCase()) > -1)
                     && (!filter.subfamily.family.descripcion || product.subfamily.family.descripcion.toLowerCase().indexOf(filter.subfamily.family.descripcion.toLowerCase()) > -1)
                     && (!filter.subfamily.descripcion || product.subfamily.descripcion.toLowerCase().indexOf(filter.subfamily.descripcion.toLowerCase()) > -1)
-                    && (!filter.topic.nombre || product.topic.nombre.toLowerCase().indexOf(filter.topic.nombre.toLowerCase()) > -1);
+                    && (!filter.topic.nombre || product.topic.nombre.toLowerCase().indexOf(filter.topic.nombre.toLowerCase()) > -1)
+                    && (filter.precio === undefined || product.precio === filter.precio);
             });
         },
         insertItem: $.noop,

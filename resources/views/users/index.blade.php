@@ -23,7 +23,7 @@
                             <p>
                                 <a class="hover-primary" href="#"><strong>{{ $user->nombre }}</strong></a>
                             </p>
-                            {{-- <p>{{ $user->role->name }}</p> --}}
+                            <p>{{ $user->role->name }}</p>
                         </div>
 
                         <div class="media-right gap-items">

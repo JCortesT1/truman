@@ -1,14 +1,29 @@
 @extends('layout')
 
 @section('content')
-<div class="main-content">
-    <div class="row justify-content-end">
-        <div class="card col-lg-7">
-            <h4 class="card-title"><strong>Libros</strong></h4>
+<div class="row">
+    <div class="card col-lg-5">
+        <header class="card-header">
+            <h4 class="card-title"><strong>Caja</strong></h4>
+        </header>
+        <div id="list" style="height: 600px;" class="media-list media-list-divided media-list-hover">
 
-            <div class="card-body">
-                <div id="jsgrid-basic" data-provide="jsgrid"></div>
+        </div>
+        <footer class="card-footer flexbox">
+            <div>
+                <button class="btn btn-outline btn-danger btn-sm">Cancelar <i class="fa fa-close"></i></button>
+                <button class="btn btn-outline btn-primary btn-sm">Guardar borrador <i class="fa fa-save"></i></button>
             </div>
+            <div class="text-right flex-grow">
+                <button class="btn btn-primary btn-sm">Pagar <i class="fa fa-check"></i></button>
+            </div>
+        </footer>
+    </div>
+    <div class="card col-lg-7 justify-content-end">
+        <h4 class="card-title"><strong>Libros</strong></h4>
+
+        <div class="card-body">
+            <div id="jsgrid-basic" data-provide="jsgrid"></div>
         </div>
     </div>
 </div>
@@ -19,46 +34,5 @@
     <!-- Sample data to populate jsGrid demo tables -->
     <script src="../assets/data/js/jsgrid-db.js"></script>
 
-    <script>
-        app.ready(function(){
-            $("#jsgrid-basic").jsGrid({
-            height: "550px",
-            width: "100%",
-            filtering: true,
-            inserting:false,
-            editing: false,
-            sorting: true,
-            paging: true,
-            autoload: true,
-            pageSize: 10,
-            pageButtonCount: 5,
-            controller: db,
-            fields: [
-                { name: "descripcion", title: "Producto", type: "text", width: 100 },
-                { name: "author.nombre", title: "Autor", type: "text", width: 100 },
-                { name: "editorial.nombre", title: "Editorial", type: "text", width: 100 },
-                { name: "subfamily.family.descripcion", title: "Familia", type: "text", width: 100 },
-                { name: "subfamily.descripcion", title: "Subfamilia", type: "text", width: 100 },
-                { name: "topic.nombre", title: "Tema", type: "text", width: 100 },
-                { type: "control", editButton: false, modeSwitchButton: false, deleteButton: false, width: 50,
-                    itemTemplate: function(value, item) {
-                        var $result = jsGrid.fields.control.prototype.itemTemplate.apply(this, arguments);
-                        var $iconBox = $("<i>").attr({class: "fa fa-dropbox"});
-
-                        var $customButton = $("<button>")
-                            .append($iconBox)
-                            .attr({class: "btn btn-info btn-sm"})
-                            .attr({title: "Ver Stock"})
-                            .click(function(e) {
-                                alert("Stock: " + item.id_producto);
-                                e.stopPropagation();
-                            });
-
-                        return $result.add($customButton);
-                    }
-                }
-            ]
-            });
-        });
-    </script>
+    <script src="{{ asset('js/home.js')}}" defer></script>
 @endsection

@@ -10,10 +10,9 @@ class EloquentUsers implements UsersInterface
 {
     public function getPaginated()
     {
-        $users = DB::table('usuario')->get()->paginate(5);
-        return $users;
-        return User::with(['role', 'sucursal'])
-            ->orderBy('created_at', request('sorted', 'ASC'))
+        // $users = DB::table('usuario')->get()->paginate(5);
+        // return $users;
+        return User::with(['role'])
             ->paginate(5);
     }
 
