@@ -36,9 +36,9 @@
                     value="{{ old('email') }}" required autocomplete="email">
                 <label for="username">{{ __('E-Mail Address') }}</label>
                 @error('email')
-            <span class="invalid-feedback" role="alert">
-                <strong>{{ $message }}</strong>
-                </span>
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
                 @enderror
             </div>
 

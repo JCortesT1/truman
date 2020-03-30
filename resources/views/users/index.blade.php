@@ -29,16 +29,6 @@
                         <div class="media-right gap-items">
                             <a class="media-action lead" href="#" data-provide="tooltip" title="Orders"><i class="ti-shopping-cart"></i></a>
                             <a class="media-action lead" href="#" data-provide="tooltip" title="Receipts"><i class="ti-receipt"></i></a>
-                            <div class="btn-group">
-                                <a class="media-action lead" "="" href=" #" data-toggle="dropdown"><i class="ti-more-alt rotate-90"></i></a>
-                                <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
-                                    <a class="dropdown-item" href="#"><i class="fa fa-fw fa-comments"></i> Messages</a>
-                                    <a class="dropdown-item" href="#"><i class="fa fa-fw fa-phone"></i> Call</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#"><i class="fa fa-fw fa-remove"></i> Remove</a>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 @endforeach

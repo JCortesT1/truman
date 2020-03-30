@@ -23,6 +23,8 @@ Route::get('/', 'HomeController@index')->name('home');
 Route::resource('users', 'UserController');
 Route::resource('roles', 'RoleController');
 Route::resource('products', 'ProductController');
+Route::resource('percents', 'PercentController');
+Route::get('getPercents', 'PercentController@getPercents');
 
 
 Auth::routes();

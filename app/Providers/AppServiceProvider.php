@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Percents\EloquentPercents;
+use App\Repositories\Percents\PercentsInterface;
 use App\Repositories\Users\EloquentUsers;
 use App\Repositories\Users\UsersInterface;
 use Illuminate\Support\ServiceProvider;
@@ -26,5 +28,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->bind(UsersInterface::class, EloquentUsers::class);
+        $this->app->bind(PercentsInterface::class, EloquentPercents::class);
     }
 }

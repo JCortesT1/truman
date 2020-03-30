@@ -49,33 +49,49 @@
                 </span>
             </header>
 
-        <nav class="sidebar-navigation">
-            <ul class="menu">
-                @auth
+            <nav class="sidebar-navigation">
+                <ul class="menu">
+                    @auth
 
-                    <li class="menu-category">Administración</li>
+                        <li class="menu-category">Administración</li>
 
-                    <li class="menu-item {{ setActive('home') }}">
-                    <a class="menu-link" href="{{ route('home') }}">
-                        <span class="icon fa fa-home"></span>
-                        <span class="title">Punto de Venta</span>
-                    </a>
-                    </li>
-
-                    @if (auth()->user()->hasRole(['Administrador']))
-                        <li class="menu-item {{ setActive('users.*') }}">
-                        <a class="menu-link" href="{{ route('users.index') }}">
-                            <span class="icon fa fa-user"></span>
-                            <span class="title">Usuarios</span>
+                        <li class="menu-item {{ setActive(['home']) }}">
+                        <a class="menu-link" href="{{ route('home') }}">
+                            <span class="icon fa fa-home"></span>
+                            <span class="title">Punto de Venta</span>
                         </a>
                         </li>
-                    @endif
 
+                        @if (auth()->user()->hasRole(['Administrador']))
+                            <li class="menu-item {{ setActive(['users.*', 'percents.*']) }} {{ setOpen(['users.*', 'percents.*']) }}">
+                                <a class="menu-link" href="#">
+                                    <span class="icon fa fa-tv"></span>
+                                    <span class="title">Mantenedores</span>
+                                    <span class="arrow"></span>
+                                </a>
 
-                @endauth
+                                <ul class="menu-submenu">
+                                    <li class="menu-item {{ setActive(['users.*']) }}">
+                                        <a class="menu-link" href="{{ route('users.index') }}" >
+                                            <span class="dot"></span>
+                                            <span class="title">Usuarios</span>
+                                        </a>
+                                    </li>
 
-            </ul>
-          </nav>
+                                    <li class="menu-item {{ setActive(['percents.*']) }}">
+                                        <a class="menu-link" href="{{ route('percents.index') }}" >
+                                            <span class="dot"></span>
+                                            <span class="title">Porcentajes</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endif
+
+                    @endauth
+
+                </ul>
+            </nav>
 
         </aside>
         <!-- END Sidebar -->

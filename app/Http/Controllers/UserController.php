@@ -9,7 +9,8 @@ class UserController extends Controller
 {
     protected $users;
 
-    function __construct(UsersInterface $users) {
+    function __construct(UsersInterface $users)
+    {
         $this->users = $users;
         $this->middleware('auth');
         $this->middleware('roles:Administrador');

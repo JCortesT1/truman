@@ -13,11 +13,11 @@ app.ready(function () {
         pageButtonCount: 5,
         controller: db,
         fields: [
-            { name: "descripcion", title: "Producto", type: "text", width: 100 },
+            { name: "descripcion", title: "Producto", type: "text", width: 150 },
             { name: "author.nombre", title: "Autor", type: "text", width: 100 },
             { name: "editorial.nombre", title: "Editorial", type: "text", width: 100 },
-            { name: "subfamily.family.descripcion", title: "Familia", type: "text", width: 100 },
-            { name: "subfamily.descripcion", title: "Subfamilia", type: "text", width: 100 },
+            // { name: "subfamily.family.descripcion", title: "Familia", type: "text", width: 100 },
+            // { name: "subfamily.descripcion", title: "Subfamilia", type: "text", width: 100 },
             { name: "topic.nombre", title: "Tema", type: "text", width: 100 },
             { name: "precio", title: "Precio", type: "number", width: 70, align: "center" },
             {
@@ -41,6 +41,7 @@ app.ready(function () {
         ],
         rowClick: function (args) {
             console.log(args.item)
+            console.log(percents);
             var element = args.item;
 
             if ($("#element-" + element.id_producto).length) {
@@ -55,35 +56,34 @@ app.ready(function () {
 });
 
 function newElement(element) {
+    var part1 = "<div id='element-" + element.id_producto + "' class='media flexbox flex-justified'>" +
+                    "<div class='btn-group-vertical'>" +
+                        "<button onclick='setQuantity(" + element.id_producto + ", &#39;add&#39;)' class='btn btn-pure btn-primary p-0'><i class='fa fa-plus-square fa-2x'></i></button>" +
+                        "<button onclick='setQuantity(" + element.id_producto + ", &#39;substract&#39;)' class='btn btn-pure btn-primary p-0'><i class='fa fa-minus-square fa-2x'></i></button>" +
+                    "</div>" +
+                    "<input class='quantity' type='number' value='1' min='1'>" +
+                    "<div class='my-auto flex-grow-2'>" +
+                        "<h5 class'm-0'>" + element.descripcion + "</h5>" +
+                        "<p class='m-0'>$/unidad: $ <strong>" + (element.precio / 1000).toFixed(3) + "</strong></p>" +
+                    "</div>" +
+                    "<div class='form-group my-auto'>";
+
+    var select = "<select class='form-control' onchange='setDiscount(this, " + element.id_producto + ")'>" +
+                    "<option value='0'>0 %</option>";
+
+    $.each(percents, function (index, value) {
+        select += "<option value='" + value.percent + "'>" + value.percent + " %</option>";
+    });
+
+    select += "</select>"
+
+    var part2 = "</div>" +
+                    "<h6 class='my-auto'>$ <strong>" + (element.precio / 1000).toFixed(3) + "</strong></h6>" +
+                    "<a class='btn btn-pure btn-danger p-0 my-auto mx-0' onclick='deleteElement(" + element.id_producto + ")'><i class='fa fa-trash-o fa-2x'></i></a>" +
+                "</div>";
+
     $('#list').append(
-        $("<div id='element-" + element.id_producto + "' class='media flexbox flex-justified'>" +
-            "<div class='btn-group-vertical'>" +
-            "<button onclick='setQuantity(" + element.id_producto + ", &#39;add&#39;)' class='btn btn-pure btn-primary p-0'><i class='fa fa-plus-square fa-2x'></i></button>" +
-            "<button onclick='setQuantity(" + element.id_producto + ", &#39;substract&#39;)' class='btn btn-pure btn-primary p-0'><i class='fa fa-minus-square fa-2x'></i></button>" +
-            "</div>" +
-            "<input class='quantity' type='number' value='1' min='1'>" +
-            "<div class='my-auto flex-grow-2'>" +
-                "<h5 class'm-0'>" + element.descripcion + "</h5>" +
-                "<p class='m-0'>$/unidad: $ <strong>" + (element.precio/1000).toFixed(3) + "</strong></p>" +
-            "</div>" +
-            "<div class='form-group my-auto'>" +
-                "<select class='form-control' onchange='setDiscount(this, " + element.id_producto + ")'>" +
-                    "<option value='0'>0 %</option>" +
-                    "<option value='5'>5 %</option>" +
-                    "<option value='7'>7 %</option>" +
-                    "<option value='10'>10 %</option>" +
-                    "<option value='15'>15 %</option>" +
-                    "<option value='20'>20 %</option>" +
-                    "<option value='25'>25 %</option>" +
-                    "<option value='30'>30 %</option>" +
-                    "<option value='35'>35 %</option>" +
-                    "<option value='40'>40 %</option>" +
-                "</select>" +
-            "</div>" +
-            "<h6 class='my-auto'>$ <strong>" + (element.precio / 1000).toFixed(3) + "</strong></h6>" +
-            "<a class='btn btn-pure btn-danger p-0 my-auto mx-0' onclick='deleteElement(" + element.id_producto + ")'><i class='fa fa-trash-o fa-2x'></i></a>" +
-            "</div>"
-        ).hide().fadeIn()
+        $(part1 + select + part2).hide().fadeIn()
     );
 
     calculateTotal();
