@@ -25,15 +25,14 @@ app.ready(function () {
                 type: "control", editButton: false, modeSwitchButton: false, deleteButton: false, width: 50,
                 itemTemplate: function (value, item) {
                     var $result = jsGrid.fields.control.prototype.itemTemplate.apply(this, arguments);
-                    var $iconBox = $("<i>").attr({ class: "fa fa-dropbox" });
+                    var $iconBox = $("<i>").attr({ class: "fa fa-dropbox fa-lg" });
 
                     var $customButton = $("<button>")
                         .append($iconBox)
-                        .attr({ class: "btn btn-info btn-sm" })
-                        .attr({ title: "Ver Stock" })
+                        .attr("class", "btn btn-info btn-sm")
+                        .attr("title", "Ver Stock")
+                        .attr("onclick", "modalStock(" + item.id_producto + ")")
                         .click(function (e) {
-                            console.log(item);
-                            alert("Stock Firme: " + item.cellars[0].pivot.stock_actual + ", Stock Consignatario: " + item.cellars[1].pivot.stock_actual);
                             e.stopPropagation();
                         });
 
@@ -89,6 +88,10 @@ function newElement(element) {
     );
 
     calculateTotal();
+}
+
+function modalStock(element) {
+    $('#modal-' + element).click();
 }
 
 function setQuantity(element, action) {

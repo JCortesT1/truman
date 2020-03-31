@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('content')
-<div class="row">
+<div id="div" class="row">
     <div class="card col-lg-5">
         <header class="card-header">
             <h4 class="card-title"><strong>Caja</strong></h4>
@@ -15,7 +15,10 @@
                     <h6>Total :</h6>
                 </div>
                 <div class="col-3 p-0">
-                    <input style="text-align: end" class="form-control mb-2" type="number" id="total" value="0" readonly>
+                    <div class="d-flex">
+                        <input style="text-align: end" class="form-control mb-2" type="number" id="total" value="0" readonly>
+                        <button class="btn btn-pure btn-primary btn-sm mb-2" onclick="listEmpty()"><i class="fa fa-pencil fa-2x"></i></button>
+                    </div>
                 </div>
             </div>
             <div class="row">

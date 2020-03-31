@@ -24,9 +24,11 @@ class ProductController extends Controller
             'subfamily.family',
             'cellars',
         ])
+        ->select('producto.*', 'bodega.descripcion as descBodega', 'inventario.stock_actual')
         ->join('inventario', 'producto.id_producto', '=', 'inventario.id_producto')
         ->join('bodega', function ($join) {
             $join->on('inventario.id_bodega', '=', 'bodega.id_bodega')
+                ->select('bodega.descripcion as hola')
                 ->where('bodega.descripcion', 'BODEGA_FIRME_ANF');
         })
         ->get();

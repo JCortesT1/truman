@@ -32,8 +32,6 @@
     window.percents = percents;
     console.log(percents);
 
-
-
     $.ajax({
         async: false,
         type: "GET",
@@ -41,4 +39,33 @@
     }).done(function(data){
         db.products = data;
     });
+
+    $.each(db.products, function (index, value) {
+        $("#div").append(
+            "<button id='modal-" + value.id_producto + "' type='button' class='d-none' data-toggle='modal' data-target='#modal-center-" + value.id_producto + "'></button>" +
+            "<div class='modal modal-center fade' id='modal-center-" + value.id_producto + "' tabindex='-1'>" +
+                "<div class='modal-dialog'>" +
+                    "<div class='modal-content'>" +
+                        "<div class='modal-header'>" +
+                            "<h4 class='modal-title'>Stock de " + value.descripcion + "</h4>" +
+                            "<button type='button' class='close' data-dismiss='modal'>" +
+                                "<span aria-hidden='true'>&times;</span>" +
+                            "</button>" +
+                        "</div>" +
+                        "<div class='modal-body mx-auto'>" +
+                            "<h6><strong>Stock Firme:</strong> " + value.cellars[0].pivot.stock_actual + "</h6>" +
+                            "<h6><strong>Stock Consignatario:</strong> " + value.cellars[1].pivot.stock_actual + "</h6>" +
+                        "</div>" +
+                        // "<div class='modal-footer'>" +
+                        //     "<button type='button' class='btn btn-bold btn-pure btn-secondary' data-dismiss='modal'>Close</button>" +
+                        //     "<button type='button' class='btn btn-bold btn-pure btn-primary'>Save changes</button>" +
+                        // "</div>" +
+                    "</div>" +
+                "</div>" +
+            "</div>"
+        );
+    });
+
+
+
 }());
