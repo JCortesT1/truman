@@ -19,6 +19,7 @@ app.ready(function () {
             // { name: "subfamily.family.descripcion", title: "Familia", type: "text", width: 100 },
             // { name: "subfamily.descripcion", title: "Subfamilia", type: "text", width: 100 },
             { name: "topic.nombre", title: "Tema", type: "text", width: 100 },
+            { name: "stock_actual", title: "Stock", type: "number", width: 70, align: "center" },
             { name: "precio", title: "Precio", type: "number", width: 70, align: "center" },
             {
                 type: "control", editButton: false, modeSwitchButton: false, deleteButton: false, width: 50,
@@ -31,7 +32,8 @@ app.ready(function () {
                         .attr({ class: "btn btn-info btn-sm" })
                         .attr({ title: "Ver Stock" })
                         .click(function (e) {
-                            alert("Stock Disponible: 10");
+                            console.log(item);
+                            alert("Stock Firme: " + item.cellars[0].pivot.stock_actual + ", Stock Consignatario: " + item.cellars[1].pivot.stock_actual);
                             e.stopPropagation();
                         });
 

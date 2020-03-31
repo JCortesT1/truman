@@ -1,5 +1,7 @@
 <?php
 
+use App\Cellar;
+use App\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -14,7 +16,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
+Route::get('inventario', function () {
+    return Cellar::find(1)->products;
+});
 
 Auth::routes();
 
@@ -24,6 +28,7 @@ Route::resource('users', 'UserController');
 Route::resource('roles', 'RoleController');
 Route::resource('products', 'ProductController');
 Route::resource('percents', 'PercentController');
+Route::resource('cellars', 'CellarController');
 Route::get('getPercents', 'PercentController@getPercents');
 
 

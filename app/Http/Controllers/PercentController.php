@@ -16,7 +16,7 @@ class PercentController extends Controller
     {
         $this->percents = $percents;
         $this->middleware('auth');
-        $this->middleware('roles:Administrador');
+        $this->middleware('roles:Administrador')->except('getPercents');
     }
 
     public function getPercents()

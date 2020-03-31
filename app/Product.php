@@ -7,6 +7,7 @@ use App\Editorial;
 use App\Subfamily;
 use App\Topic;
 use App\Unit;
+use App\Cellar;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -37,5 +38,10 @@ class Product extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class, 'id_unidad');
+    }
+
+    public function cellars()
+    {
+        return $this->belongsToMany('App\Cellar', 'inventario', 'id_producto', 'id_bodega')->withPivot('stock_actual');
     }
 }
