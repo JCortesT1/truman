@@ -10,6 +10,12 @@
         percents = data;
     });
 
+    $.each(percents, function (index, value) {
+        $("#totalDiscount").append(
+            "<option value=" + value.percent + ">" + value.percent + " %</option>"
+        );
+    });
+
     var db = {
         loadData: function (filter) {
             return $.grep(this.products, function (product) {
