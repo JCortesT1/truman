@@ -38,7 +38,7 @@
 
 
         <!-- Sidebar -->
-        <aside class="sidebar sidebar-icons-right sidebar-icons-boxed sidebar-expand-lg">
+        {{-- <aside class="sidebar sidebar-icons-right sidebar-icons-boxed sidebar-expand-lg">
             <header class="sidebar-header">
                 <a class="logo-icon" title="Salir" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fa fa-sign-out"></i></a>
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -93,26 +93,89 @@
                 </ul>
             </nav>
 
-        </aside>
+        </aside> --}}
         <!-- END Sidebar -->
 
 
-        {{-- <!-- Topbar -->
-        <header class="topbar">
+        <!-- Topbar -->
+        <header class="topbar topbar-expand-lg bg-info topbar-inverse">
             <div class="topbar-left">
+                <span class="topbar-btn topbar-menu-toggler"><i>&#9776;</i></span>
+                <span class="topbar-brand"><strong>TRUMAN</strong></span>
 
+                <div class="topbar-divider d-none d-xl-block"></div>
+
+                <nav class="topbar-navigation">
+                    <ul class="menu">
+
+                        <li class="menu-item {{ setActive(['home']) }}">
+                            <a class="menu-link" href="#">
+                                <span class="icon ti-shopping-cart"></span>
+                                <span class="title">POS</span>
+                                <span class="arrow"></span>
+                            </a>
+                            <ul class="menu-submenu">
+                                <li class="menu-item">
+                                    <a class="menu-link" href="{{ route('home') }}">
+                                        <span class="title">Punto de Venta</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a class="menu-link" href="#">
+                                        <span class="title">Cierre de Caja</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        @if (auth()->user()->hasRole(['Administrador']))
+                            <li class="menu-item {{ setActive(['users.*', 'percents.*']) }}">
+                                <a class="menu-link" href="#">
+                                    <span class="icon ti-layout-grid3-alt"></span>
+                                    <span class="title">Mantenedores</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="menu-submenu">
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="{{ route('users.index') }}">
+                                            <span class="title">Usuarios</span>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="{{ route('percents.index') }}">
+                                            <span class="title">Porcentajes</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        @endif
+
+                    </ul>
+                </nav>
             </div>
 
             <div class="topbar-right">
-                <div>
-                    <a class="btn btn-sm btn-outline btn-primary" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('Logout') }}</a>
-                </div>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                </form>
+                <nav class="topbar-navigation">
+                    <ul class="menu">
+
+                        <li class="menu-item">
+                            <a class="menu-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <span class="icon ti-shift-right"></span>
+                                <span class="title">Salir</span>
+                            </a>
+                        </li>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+
+
+
+                    </ul>
+                </nav>
+
             </div>
         </header>
-        <!-- END Topbar --> --}}
+        <!-- END Topbar -->
 
 
         <!-- Main container -->

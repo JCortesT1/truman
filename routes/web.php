@@ -29,8 +29,11 @@ Route::resource('roles', 'RoleController');
 Route::resource('products', 'ProductController');
 Route::resource('percents', 'PercentController');
 Route::resource('cellars', 'CellarController');
-Route::get('getPercents', 'PercentController@getPercents');
+Route::resource('orden_ventas', 'OrdenVentaController');
 
+Route::get('getPercents', 'PercentController@getPercents');
+Route::get('getDocuments', 'DocumentController@getDocuments');
+Route::get('getPayMethods', 'DocumentController@getPayMethods');
 
 Auth::routes();
 

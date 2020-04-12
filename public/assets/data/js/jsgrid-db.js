@@ -1,6 +1,8 @@
 (function() {
 
     var percents;
+    var documents;
+    var payMethods;
 
     $.ajax({
         async: false,
@@ -13,6 +15,34 @@
     $.each(percents, function (index, value) {
         $("#totalDiscount").append(
             "<option value=" + value.percent + ">" + value.percent + " %</option>"
+        );
+    });
+
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "getDocuments"
+    }).done(function (data) {
+        documents = data;
+    });
+
+    $.each(documents, function (index, value) {
+        $("#document").append(
+            "<option value='" + value.nombre_corto + "'>" + value.nombre + "</option>"
+        );
+    });
+
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "getPayMethods"
+    }).done(function (data) {
+        payMethods = data;
+    });
+
+    $.each(payMethods, function (index, value) {
+        $("#selectPaymentMethod").append(
+            "<option value=" + value.nombre_corto + ">" + value.nombre + "</option>"
         );
     });
 
@@ -36,7 +66,8 @@
 
     window.db = db;
     window.percents = percents;
-    console.log(percents);
+    window.documents = documents;
+    window.payMethods = payMethods;
 
     $.ajax({
         async: false,

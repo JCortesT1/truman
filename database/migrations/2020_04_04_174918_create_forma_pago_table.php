@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDraftsTable extends Migration
+class CreateFormaPagoTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateDraftsTable extends Migration
      */
     public function up()
     {
-        Schema::create('drafts', function (Blueprint $table) {
-            $table->id();
-
-            $table->timestamps();
+        Schema::create('forma_pago', function (Blueprint $table) {
+            $table->id('id_forma_pago');
+            $table->string('nombre');
+            $table->string('nombre_corto');
         });
     }
 
@@ -27,6 +27,6 @@ class CreateDraftsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('drafts');
+        Schema::dropIfExists('forma_pago');
     }
 }

@@ -14983,7 +14983,7 @@ body > div > main {
 
 body .topbar + .main-container,
 body .topbar + main {
-  padding-top: 64px;
+  padding-top: 45px;
 }
 
 body .topbar-secondary + .main-container,
@@ -17761,7 +17761,7 @@ ul.flexbox {
 
 .topbar {
   padding: 0 18px;
-  height: 64px;
+  height: 45px;
   display: -webkit-box;
   display: flex;
   -webkit-box-pack: justify;
