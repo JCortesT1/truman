@@ -14,13 +14,17 @@ app.ready(function () {
         controller: db,
         fields: [
             { name: "descripcion", title: "Producto", type: "text", width: 150 },
-            { name: "author.nombre", title: "Autor", type: "text", width: 100 },
-            { name: "editorial.nombre", title: "Editorial", type: "text", width: 100 },
+            { name: "author.id_autor", title: "Autor", type: "select", items: db.authors, valueField: "id_autor", textField: "nombre", width: 100 },
+            { name: "editorial.id_editorial", title: "Editorial", type: "select", items: db.editorials, valueField: "id_editorial", textField: "nombre", width: 100 },
             // { name: "subfamily.family.descripcion", title: "Familia", type: "text", width: 100 },
             // { name: "subfamily.descripcion", title: "Subfamilia", type: "text", width: 100 },
-            { name: "topic.nombre", title: "Tema", type: "text", width: 90 },
+            { name: "topic.id_tema", title: "Tema", type: "select", items: db.topics, valueField: "id_tema", textField: "nombre", width: 90 },
             { name: "stock_actual", title: "Stock", type: "number", width: 60, align: "center" },
-            { name: "precio", title: "Precio", type: "number", width: 75, align: "center" },
+            { name: "precio", title: "Precio", type: "number", width: 75, align: "center",
+                itemTemplate: function (value) {
+                    return "$ " + (value / 1000).toFixed(3);
+                }
+            },
             {
                 type: "control", editButton: false, modeSwitchButton: false, deleteButton: false, width: 60,
                 itemTemplate: function (value, item) {
@@ -56,14 +60,14 @@ app.ready(function () {
 
 function newElement(element) {
     var options;
-    var tax = 15.97;
+    var tax = 1.19;
     var precio;
     var totalDiscount = 1 - $('#totalDiscount').val() / 100;
 
     var typeDocument = $('#document').val();
 
     if (typeDocument == "FE") {
-        precio = (100 - tax) * element.precio / 100;
+        precio = element.precio / tax;
     } else {
         precio = element.precio;
     }
@@ -174,7 +178,7 @@ function setDiscount(select, element) {
 
 function calculateTotal() {
     var total = 0;
-    var tax = 15.97;
+    var tax = 1.19;
     var elementsCount = 0;
 
     $('.unitPrice').each(function(index){
@@ -182,6 +186,7 @@ function calculateTotal() {
     });
     if ($('#document').val() == "FE") {
         var net = total;
+        console.log("neto: " + net);
         if (net == 0) {
             $('#net').text(0);
             $('#tax').text(0);
@@ -194,7 +199,9 @@ function calculateTotal() {
                 $('#net').text(net);
             }
             $('#input-total-neto').val(net);
-            total = 100 * total / (100 - tax);
+            total = total * tax;
+            console.log("total: " + total);
+            console.log("neto - total: " + (total - net));
             if ((total - net).toString().length > 3) {
                 $('#tax').text(((total - net) / 1000).toFixed(3));
             } else {
@@ -314,7 +321,7 @@ function displayManual() {
 }
 
 function changeDocument() {
-    var tax = 15.97;
+    var tax = 1.19;
     var precio = 0;
 
     var typeDocument = $('#document').val();
@@ -327,10 +334,10 @@ function changeDocument() {
             var originalPrice = parseInt($(this).find('.originalPrice').val());
             var selectDiscount = parseInt($(this).find('select').val());
             var discount = 1 - selectDiscount / 100;
-            precio = (100 - tax) * originalPrice * discount / 100;
-            $(this).find('p strong').text((((100 - tax) * originalPrice / 100) / 1000).toFixed(3));
+            precio =  originalPrice * discount / tax;
+            $(this).find('p strong').text(((originalPrice / tax) / 1000).toFixed(3));
 
-            itemform.find('.form-precio-unitario').val((100 - tax) * originalPrice / 100);
+            itemform.find('.form-precio-unitario').val(originalPrice / tax);
 
             var quantity = $(this).find('.quantity').val();
             $(this).find('.unitPrice').text((precio / 1000 * quantity).toFixed(3));
@@ -346,18 +353,18 @@ function changeDocument() {
             var selectDiscount = parseInt($(this).find('select').val());
             var discount = 1 - selectDiscount / 100;
             var quantity = $(this).find('.quantity').val();
-            $(this).find('.unitPrice').text((originalPrice / 1000 * discount * quantity).toFixed(3));
+            precio = originalPrice * discount
+            $(this).find('.unitPrice').text((precio / 1000 * quantity).toFixed(3));
 
             itemform.find('.form-total-libro').val(precio * quantity);
 
-            var quantity = $(this).find('.quantity').val();
             $(this).find('p strong').text((originalPrice / 1000).toFixed(3));
 
-            itemform.find('.form-precio-unitario').val((100 - tax) * originalPrice / 100);
+            itemform.find('.form-precio-unitario').val(originalPrice);
         });
     }
     $('#label-document').text($('#document option:selected').html());
-    $('#input-tipo-documento').text($('#document option:selected').val());
+    $('#input-tipo-documento').val($('#document option:selected').val());
     calculateTotal();
 }
 

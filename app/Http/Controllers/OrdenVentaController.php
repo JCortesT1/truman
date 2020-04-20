@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Detalle_forma_pago;
 use App\Detalle_orden_venta;
+use App\Document;
 use App\Forma_pago;
 use App\Orden_venta;
 use Illuminate\Http\Request;
@@ -11,6 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class OrdenVentaController extends Controller
 {
+    function __construct() {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -39,10 +44,20 @@ class OrdenVentaController extends Controller
      */
     public function store(Request $request)
     {
+        $ultimoNumero = 0;
+
         $documento = DB::table('documento')->where('nombre_corto', 'like', $request->input('tipo-documento'))->first();
+        $ultimoDocumento = Orden_venta::where('id_documento', $documento->id_documento)->latest('id_orden_venta')->first();
+
+        if ($ultimoDocumento != null) {
+            if ($ultimoDocumento->numero_documento != null) {
+                $ultimoNumero = $ultimoDocumento->numero_documento + 1;
+            }
+        }
 
         $orden_venta = Orden_venta::create([
             'fecha_documento' => date('YmdHi'),
+            'numero_documento' => $ultimoNumero + 1,
             'total_bruto' => round($request->input('total-bruto')),
             'total_neto' => round($request->input('total-neto')),
             'iva' => round($request->input('iva')),
@@ -145,5 +160,55 @@ class OrdenVentaController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function close()
+    {
+        $total_amount = 0;
+        $ventas = Orden_venta::select(DB::raw('forma_pago.nombre, count(detalle_forma_pago.monto) as count, sum(detalle_forma_pago.monto) as suma'))
+        ->join('detalle_forma_pago', 'orden_venta.id_orden_venta', '=', 'detalle_forma_pago.id_orden_venta')
+        ->join('forma_pago', 'detalle_forma_pago.id_forma_pago', '=', 'forma_pago.id_forma_pago')
+        ->where('orden_venta.fecha_documento', 'like', date('Ymd') . "%")
+        ->groupBy('forma_pago.nombre')->get();
+
+        foreach ($ventas as $value) {
+            $total_amount += $value->suma;
+        }
+
+        return view('orders.close', compact('ventas', 'total_amount'));
+    }
+
+    public function getSales($fecha)
+    {
+        $ventas = Orden_venta::select(DB::raw('forma_pago.nombre, count(detalle_forma_pago.monto) as count, sum(detalle_forma_pago.monto) as suma'))
+            ->join('detalle_forma_pago', 'orden_venta.id_orden_venta', '=', 'detalle_forma_pago.id_orden_venta')
+            ->join('forma_pago', 'detalle_forma_pago.id_forma_pago', '=', 'forma_pago.id_forma_pago')
+            ->where('orden_venta.fecha_documento', 'like', $fecha . "%")
+            ->groupBy('forma_pago.nombre')->get();
+
+        return $ventas;
+    }
+
+    public function getDocumentsResume($fecha)
+    {
+        $documents_resume = Detalle_forma_pago::whereHas(
+            'ordenVenta', function ($query) use ($fecha) {
+                $query->where('fecha_documento', 'like', $fecha . "%");
+            })
+            ->with(['formaPago', 'ordenVenta', 'ordenVenta.document'])
+            ->orderBy('id_orden_venta', 'desc')
+            ->get();
+
+        return $documents_resume;
+    }
+
+    public function documentos()
+    {
+        return Document::where('venta_pos', 1)->get();
+    }
+
+    public function formasPago()
+    {
+        return Forma_pago::get();
     }
 }

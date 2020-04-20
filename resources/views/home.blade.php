@@ -68,7 +68,7 @@
             <div style="height: 500px;" class="card-body media-list media-list-divided media-list-hover overflow-auto">
                 <div class="row form-group">
                     <h5 id="label-document" class="col-12">Boleta Electrónica</h5>
-                    <input id="tipo-documento" name="tipo-documento" type="hidden" value="BOE">
+                    <input id="input-tipo-documento" name="tipo-documento" type="hidden" value="BOE">
                 </div>
                 <div class="row form-group">
                     <h5 class="col-6 text-right">Fecha de Venta:</h5>
@@ -193,7 +193,6 @@
 
 @section('script')
     <!-- Sample data to populate jsGrid demo tables -->
-    <script src="../assets/data/js/jsgrid-db.js"></script>
-
+    <script src="{{ asset('js/jsgrid-books.js') }}"></script>
     <script src="{{ asset('js/home.js')}}" defer></script>
 @endsection

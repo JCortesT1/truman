@@ -50,11 +50,11 @@
         loadData: function (filter) {
             return $.grep(this.products, function (product) {
                 return (!filter.descripcion || product.descripcion.toLowerCase().indexOf(filter.descripcion.toLowerCase()) > -1)
-                    && (!filter.author.nombre || product.author.nombre.toLowerCase().indexOf(filter.author.nombre.toLowerCase()) > -1)
-                    && (!filter.editorial.nombre || product.editorial.nombre.toLowerCase().indexOf(filter.editorial.nombre.toLowerCase()) > -1)
+                    && (!filter.author.id_autor || product.author.id_autor === filter.author.id_autor)
+                    && (!filter.editorial.id_editorial || product.editorial.id_editorial === filter.editorial.id_editorial)
                     // && (!filter.subfamily.family.descripcion || product.subfamily.family.descripcion.toLowerCase().indexOf(filter.subfamily.family.descripcion.toLowerCase()) > -1)
                     // && (!filter.subfamily.descripcion || product.subfamily.descripcion.toLowerCase().indexOf(filter.subfamily.descripcion.toLowerCase()) > -1)
-                    && (!filter.topic.nombre || product.topic.nombre.toLowerCase().indexOf(filter.topic.nombre.toLowerCase()) > -1)
+                    && (!filter.topic.id_tema || product.topic.id_tema === filter.topic.id_tema)
                     && (filter.stock_actual === undefined || product.stock_actual === filter.stock_actual)
                     && (filter.precio === undefined || product.precio === filter.precio);
             });
@@ -63,6 +63,33 @@
         updateItem: $.noop,
         deleteItem: $.noop
     }
+
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "autores"
+    }).done(function (data) {
+        data.unshift({ id_autor: 0, nombre: ""});
+        db.authors = data;
+    });
+
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "editoriales"
+    }).done(function (data) {
+        data.unshift({ id_editorial: 0, nombre: "" });
+        db.editorials = data;
+    });
+
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "temas"
+    }).done(function (data) {
+        data.unshift({ id_tema: 0, nombre: "" });
+        db.topics = data;
+    });
 
     window.db = db;
     window.percents = percents;

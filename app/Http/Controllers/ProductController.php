@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Author;
+use App\Editorial;
 use App\Product;
+use App\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -32,6 +35,21 @@ class ProductController extends Controller
                 ->where('bodega.descripcion', 'BODEGA_FIRME_ANF');
         })
         ->get();
+    }
+
+    public function autores()
+    {
+        return Author::all();
+    }
+
+    public function editoriales()
+    {
+        return Editorial::all();
+    }
+
+    public function temas()
+    {
+        return Topic::all();
     }
 
     /**

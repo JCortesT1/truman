@@ -121,7 +121,7 @@
                                     </a>
                                 </li>
                                 <li class="menu-item">
-                                    <a class="menu-link" href="#">
+                                    <a class="menu-link" href="{{ route('orden_ventas.close') }}">
                                         <span class="title">Cierre de Caja</span>
                                     </a>
                                 </li>

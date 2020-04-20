@@ -26,12 +26,23 @@ Route::get('/', 'HomeController@index')->name('home');
 
 Route::resource('users', 'UserController');
 Route::resource('roles', 'RoleController');
-Route::resource('products', 'ProductController');
-Route::resource('percents', 'PercentController');
 Route::resource('cellars', 'CellarController');
-Route::resource('orden_ventas', 'OrdenVentaController');
 
+Route::resource('percents', 'PercentController');
 Route::get('getPercents', 'PercentController@getPercents');
+
+Route::resource('orden_ventas', 'OrdenVentaController');
+Route::get('close', 'OrdenVentaController@close')->name('orden_ventas.close');
+Route::get('documentos', 'OrdenVentaController@documentos');
+Route::get('formasPago', 'OrdenVentaController@formasPago');
+Route::get('getSales/{fecha}', 'OrdenVentaController@getSales');
+Route::get('getDocumentsResume/{fecha}', 'OrdenVentaController@getDocumentsResume');
+
+Route::resource('products', 'ProductController');
+Route::get('autores', 'ProductController@autores');
+Route::get('editoriales', 'ProductController@editoriales');
+Route::get('temas', 'ProductController@temas');
+
 Route::get('getDocuments', 'DocumentController@getDocuments');
 Route::get('getPayMethods', 'DocumentController@getPayMethods');
 
