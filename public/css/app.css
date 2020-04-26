@@ -10890,3 +10890,13 @@ a.text-dark:focus {
   height: 70px;
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE and Edge */
+
+.custom-scrollbar {
+  -ms-overflow-style: none;
+}
+

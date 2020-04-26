@@ -11,6 +11,7 @@ app.ready(function () {
         autoload: true,
         pageSize: 8,
         pageButtonCount: 5,
+        noDataContent: "No se encuentran registros",
         controller: db,
         fields: [
             { name: "descripcion", title: "Producto", type: "text", width: 150 },

@@ -1,15 +1,20 @@
 @extends('layout')
 
+@section('meta')
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
+@endsection
+
 @section('content')
+@include('partials.status')
 <div id="div" class="row">
     <div class="card col-6 mb-0">
         <header class="card-header form-group row">
             <h4 class="col-2 my-auto"><strong>Caja del</strong></h4>
             <div class="col-3">
-                <input class="form-control" onchange="getSales(this)" type="date" value="{{ date('Y-m-d') }}">
+                <input id="input-date" class="form-control" onchange="getSales(this)" type="date" value="{{ $fecha }}">
             </div>
         </header>
-        <div style="height: 570px;" class="card-body">
+        <div style="height: 580px;" class="card-body">
             <div id="sales-resume">
                 <div class="border-bottom row m-1">
                     <div class="col-4">
@@ -55,7 +60,6 @@
     <div id="div-payment" class="card col-6 justify-content-end mb-0 d-none">
 
     </div>
-
 </div>
 <!--/.main-content -->
 @endsection

@@ -1,6 +1,7 @@
 @extends('layout')
 
 @section('content')
+@include('partials.status')
 <div id="div" class="row">
     <div class="card col-6 mb-0">
         <header class="card-header">

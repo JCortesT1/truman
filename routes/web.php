@@ -32,7 +32,7 @@ Route::resource('percents', 'PercentController');
 Route::get('getPercents', 'PercentController@getPercents');
 
 Route::resource('orden_ventas', 'OrdenVentaController');
-Route::get('close', 'OrdenVentaController@close')->name('orden_ventas.close');
+Route::get('close/{fecha?}', 'OrdenVentaController@close')->name('orden_ventas.close');
 Route::get('documentos', 'OrdenVentaController@documentos');
 Route::get('formasPago', 'OrdenVentaController@formasPago');
 Route::get('getSales/{fecha}', 'OrdenVentaController@getSales');
@@ -45,6 +45,7 @@ Route::get('temas', 'ProductController@temas');
 
 Route::get('getDocuments', 'DocumentController@getDocuments');
 Route::get('getPayMethods', 'DocumentController@getPayMethods');
+Route::post('updateDocument/{document}', 'DocumentController@updateDocument');
 
 Auth::routes();
 

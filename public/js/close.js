@@ -10,6 +10,7 @@ app.ready(function () {
         autoload: true,
         pageSize: 8,
         pageButtonCount: 5,
+        noDataContent: "No se encuentran registros",
         controller: db,
         fields: [
             { name: "orden_venta.document.id_documento", title: "Documento", type: "select", items: db.documents, valueField: "id_documento", textField: "nombre", width: 120, align: "center" },
@@ -33,13 +34,13 @@ app.ready(function () {
                 type: "control", editButton: false, modeSwitchButton: false, deleteButton: false, width: 50,
                 itemTemplate: function (value, item) {
                     var $result = jsGrid.fields.control.prototype.itemTemplate.apply(this, arguments);
-                    var $iconBox = $("<i>").attr({ class: "fa fa-dropbox fa-lg" });
+                    var $iconBox = $("<i>").attr({ class: "fa fa-pencil-square fa-lg" });
 
                     var $customButton = $("<button>")
                         .append($iconBox)
-                        .attr("class", "btn btn-info btn-sm")
+                        .attr("class", "btn btn-warning btn-sm")
                         .attr("title", "Ver Stock")
-                        // .attr("onclick", "modalStock(" + item.id_producto + ")")
+                        .attr("onclick", "modalDocument(" + item.id_detalle_forma_pago + ")")
                         .click(function (e) {
                             e.stopPropagation();
                         });
@@ -62,6 +63,10 @@ app.ready(function () {
     });
 });
 
+function modalDocument(element) {
+    $('#modal-' + element).click();
+}
+
 function getSales(date) {
     var total_amount = 0;
     var fecha = $(date).val().replace(/(-)+/g, '');
@@ -72,9 +77,47 @@ function getSales(date) {
         url: "getDocumentsResume/" + fecha
     }).done(function (data) {
         window.db.documentsResume = data;
-        console.log(db);
         $("#jsgrid-basic").jsGrid("option", "data", data);
-        console.log($("#jsgrid-basic"));
+
+        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+        var origin = window.location.origin;
+        $(".modal-documents").remove();
+
+        $.each(data, function (index, value) {
+            var fecha = value.orden_venta.fecha_documento;
+            $("#div").append(
+                "<form class='modal-documents' method='POST' action='" + origin + "/updateDocument/" + value.id_detalle_forma_pago + "' >" +
+                    "<input type='hidden' name='_token' value='" + CSRF_TOKEN + "'></input>" +
+                    "<div>" +
+                        "<button id='modal-" + value.id_detalle_forma_pago + "' type='button' class='d-none' data-toggle='modal' data-target='#modal-center-" + value.id_detalle_forma_pago + "'></button>" +
+                        "<div class='modal modal-center fade' id='modal-center-" + value.id_detalle_forma_pago + "' tabindex='-1'>" +
+                            "<div class='modal-dialog'>" +
+                                "<div class='modal-content'>" +
+                                    "<div class='modal-header'>" +
+                                        "<h3 class='modal-title'>" + value.orden_venta.document.nombre + " N°" + value.orden_venta.numero_documento + "</h4>" +
+                                        "<button type='button' class='close' data-dismiss='modal'>" +
+                                            "<span aria-hidden='true'>&times;</span>" +
+                                        "</button>" +
+                                    "</div>" +
+                                    "<div class='modal-body mx-4'>" +
+                                        "<p class='h4 mb-0'><strong>Fecha:</strong> " + fecha.substring(6, 8) + "/" + fecha.substring(4, 6) + "/" + fecha.substring(0, 4) + " " + fecha.substring(8, 10) + ":" + fecha.substring(10, 12) + "</p>" +
+                                        "<p class='h4 mb-0'><strong>Forma de pago:</strong> " + value.forma_pago.nombre + "</p>" +
+                                        "<div class='row'>" +
+                                            "<label class='h4 mb-0 col-2 pr-0'><strong>Monto:</strong></label>" +
+                                            "<input class='form-control col-3 ml-2' min=0 name='monto-nuevo' type='number' value=" + value.monto + " >" +
+                                        "</div>" +
+                                    "</div>" +
+                                    "<div class='modal-footer'>" +
+                                        "<button type='submit' class='btn btn-bold btn-success'>Actualizar</button>" +
+                                        "<a class='btn btn-bold btn-danger' data-dismiss='modal'>Cerrar</a>" +
+                                    "</div>" +
+                                "</div>" +
+                            "</div>" +
+                        "</div>" +
+                    "</div>" +
+                "</form>"
+            );
+        });
     });
 
 
@@ -82,7 +125,6 @@ function getSales(date) {
         type: "GET",
         url: "getSales/" + fecha
     }).done(function (data) {
-        console.log(data);
         $("#div-list-sales").empty();
 
         if (data.length) {

@@ -114,7 +114,7 @@ class OrdenVentaController extends Controller
             ]);
         }
 
-        return $request;
+        return redirect()->route('home')->with('status', 'Se registró la venta exitosamente con ' . $documento->nombre . ' N°' . $orden_venta->numero_documento);
     }
 
     /**
@@ -162,20 +162,25 @@ class OrdenVentaController extends Controller
         //
     }
 
-    public function close()
+    public function close($fecha = null)
     {
+        $fecha = is_null($fecha) ? date('Ymd') : $fecha;
         $total_amount = 0;
         $ventas = Orden_venta::select(DB::raw('forma_pago.nombre, count(detalle_forma_pago.monto) as count, sum(detalle_forma_pago.monto) as suma'))
         ->join('detalle_forma_pago', 'orden_venta.id_orden_venta', '=', 'detalle_forma_pago.id_orden_venta')
         ->join('forma_pago', 'detalle_forma_pago.id_forma_pago', '=', 'forma_pago.id_forma_pago')
-        ->where('orden_venta.fecha_documento', 'like', date('Ymd') . "%")
+        ->where('orden_venta.fecha_documento', 'like', $fecha . "%")
         ->groupBy('forma_pago.nombre')->get();
 
         foreach ($ventas as $value) {
             $total_amount += $value->suma;
         }
 
-        return view('orders.close', compact('ventas', 'total_amount'));
+        $time = strtotime($fecha);
+        $fecha = date('Y-m-d', $time);
+
+
+        return view('orders.close', compact('ventas', 'total_amount', 'fecha'));
     }
 
     public function getSales($fecha)

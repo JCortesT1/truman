@@ -14,3 +14,12 @@
     border-radius: 10px;
     height: 70px;
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE and Edge */
+.custom-scrollbar {
+  -ms-overflow-style: none;
+}
