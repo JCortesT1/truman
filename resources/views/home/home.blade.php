@@ -29,7 +29,16 @@
                 </div>
             </div>
             <div class="row justify-content-end pt-2">
-                <div style="text-align: end" class="col-3 my-auto">
+                <div id="div-input-providers" class="col-8 row mr-1 d-none">
+                    <div class="col-10 form-type-line form-group px-0 mb-0">
+                        <input id="text-provider" class="form-control" type="text" placeholder="Cliente" readonly>
+                    </div>
+                    <div class="col-1 pl-0">
+                        <button id="button-provider" onclick="displayProviders()" class="form-control btn btn-pure btn-info btn-sm pl-0" type="button"><i class="fa fa-search fa-lg"></i></button>
+                        <button id="button-empty-provider" onclick="emptyProviders()" class="form-control btn btn-pure btn-danger btn-sm pl-0 d-none" type="button"><i class="fa fa-trash fa-lg"></i></button>
+                    </div>
+                </div>
+                <div style="text-align: end" class="col-1 my-auto pl-0">
                     <h6>Total :</h6>
                 </div>
                 <div class="col-3 p-0">
@@ -43,6 +52,7 @@
                 <div>
                     <button class="btn btn-outline btn-danger btn-sm" onclick="listEmpty()">Cancelar <i class="fa fa-close"></i></button>
                     <button class="btn btn-outline btn-primary btn-sm">Guardar borrador <i class="fa fa-save"></i></button>
+                    <button class="btn btn-outline btn-dark btn-sm" onclick="displayUndo()">Devolución <i class="fa fa-undo"></i></button>
                 </div>
                 <div class="text-right flex-grow">
                     <button class="btn btn-primary btn-sm" onclick="displayPayment()">Pagar <i class="fa fa-check"></i></button>
@@ -50,82 +60,12 @@
             </div>
         </footer>
     </div>
-    <div id="div-books" class="card col-6 justify-content-end mb-0">
-        <header class="card-header">
-            <h4 class="card-title"><i class="fa fa-book fa-lg btn-pure btn-primary"></i>&nbsp; <strong>Libros</strong></h4>
-        </header>
 
-        <div class="card-body px-0">
-            <div class="overflow-auto" id="jsgrid-basic" data-provide="jsgrid"></div>
-        </div>
-    </div>
-    <div id="div-payment" class="card col-6 justify-content-end mb-0 d-none">
-        <form method="POST" action="{{ route('orden_ventas.store') }}" novalidate>
-            @csrf
-            <header class="card-header">
-                <h4 class="card-title"><i class="fa fa-dollar fa-lg btn-pure btn-primary"></i>&nbsp; <strong>Pagar</strong></h4>
-            </header>
+    @include('home.partials._div_books')
+    @include('home.partials._div_payment')
+    @include('home.partials._div_providers')
+    @include('home.partials._div_undo')
 
-            <div style="height: 500px;" class="card-body media-list media-list-divided media-list-hover overflow-auto">
-                <div class="row form-group">
-                    <h5 id="label-document" class="col-12">Boleta Electrónica</h5>
-                    <input id="input-tipo-documento" name="tipo-documento" type="hidden" value="BOE">
-                </div>
-                <div class="row form-group">
-                    <h5 class="col-6 text-right">Fecha de Venta:</h5>
-                    <h5 class="col-6">{{ date('d/m/Y') }}</h5>
-                </div>
-                <div class="row form-group">
-                    <h5 class="col-6 text-right">Total a Pagar:</h5>
-                    <h5 id="label-total-payment" class="col-6"></h5>
-                    <input type="hidden" name="total-bruto" id="input-total-bruto">
-                </div>
-                <div id="div-payment-method">
-                    <div class="row form-group">
-                        <select class="form-control col-6 ml-3 mb-4" id="selectPaymentMethod">
-                        </select>
-                    </div>
-                    <div class="row form-group text-right form-type-line">
-                        <h5 class="col-6 text-right my-auto">Monto Forma de Pago:</h5>
-                        <div class="text-right col-3">
-                            <input style="text-align: end" class="form-control form-control-lg" type="number" id="payment-method-amount" value=0 min=0>
-                        </div>
-                    </div>
-                    <div class="row form-group justify-content-end">
-                        <a class="btn btn-pure btn-warning mr-4" onclick="addPaymentMethod()" href="#">agregar forma de pago <i class="fa fa-plus"></i></a>
-                    </div>
-                </div>
-                <div id="div-paids">
-
-                </div>
-            </div>
-            <footer class="card-footer">
-                <div class="row border border-primary rounded-lg p-2 m-2">
-                    <div class="col-6 text-right">
-                        <h5>Total a Pagar</h5>
-                        <h5>Total Pagado</h5>
-                        <h5>Vuelto</h5>
-                    </div>
-                    <div class="col-6 text-right">
-                        <h5 id="total-payment"></h5>
-                        <h5 id="total-paid">$ 0</h5>
-                        <h5 id="change-payment">$ 0</h5>
-                        <input type="hidden" name="total-neto" id="input-total-neto">
-                        <input type="hidden" name="iva" id="input-iva">
-                        <input type="hidden" name="total-pagado" id="input-total-pagado">
-                        <input type="hidden" name="total-vuelto" id="input-total-vuelto">
-                    </div>
-                </div>
-                <div class="row form-group justify-content-end">
-                    <button id="button-confirmar-pago" type="submit" class="btn btn-primary mr-4" disabled>CONFIRMAR PAGO <i class="fa fa-check"></i></button>
-                </div>
-            </footer>
-            <input type="number" id="partialTotal" class="d-none">
-            <div id="div-form-books" class="d-none">
-
-            </div>
-        </form>
-    </div>
     <div class="modal modal-center fade" id="modal-center-discount" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -195,5 +135,9 @@
 @section('script')
     <!-- Sample data to populate jsGrid demo tables -->
     <script src="{{ asset('js/jsgrid-books.js') }}"></script>
+    <script src="{{ asset('js/jsgrid-tickets.js') }}"></script>
     <script src="{{ asset('js/home.js')}}" defer></script>
+    <script src="{{ asset('js/div_payment.js')}}" defer></script>
+    <script src="{{ asset('js/div_providers.js')}}" defer></script>
+    <script src="{{ asset('js/div_undo.js')}}" defer></script>
 @endsection

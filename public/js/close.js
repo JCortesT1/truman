@@ -27,7 +27,7 @@ app.ready(function () {
             {
                 name: "monto", title: "Monto", type: "number", width: 65, align: "center",
                 itemTemplate: function (value) {
-                    return "$ " + (value / 1000).toFixed(3);
+                    return "$ " + formatMoney(value);
                 }
             },
             {
@@ -39,7 +39,7 @@ app.ready(function () {
                     var $customButton = $("<button>")
                         .append($iconBox)
                         .attr("class", "btn btn-warning btn-sm")
-                        .attr("title", "Ver Stock")
+                        .attr("title", "Ver Detalle")
                         .attr("onclick", "modalDocument(" + item.id_detalle_forma_pago + ")")
                         .click(function (e) {
                             e.stopPropagation();
@@ -81,6 +81,14 @@ function getSales(date) {
 
         var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
         var origin = window.location.origin;
+        var options;
+
+        $.each(db.payments, function (index, value) {
+            if (value.id_forma_pago != 0) {
+                options += "<option value=" + value.id_forma_pago + ">" + value.nombre + "</option>";
+            }
+        });
+
         $(".modal-documents").remove();
 
         $.each(data, function (index, value) {
@@ -99,13 +107,15 @@ function getSales(date) {
                                             "<span aria-hidden='true'>&times;</span>" +
                                         "</button>" +
                                     "</div>" +
-                                    "<div class='modal-body mx-4'>" +
-                                        "<p class='h4 mb-0'><strong>Fecha:</strong> " + fecha.substring(6, 8) + "/" + fecha.substring(4, 6) + "/" + fecha.substring(0, 4) + " " + fecha.substring(8, 10) + ":" + fecha.substring(10, 12) + "</p>" +
-                                        "<p class='h4 mb-0'><strong>Forma de pago:</strong> " + value.forma_pago.nombre + "</p>" +
+                                    "<div class='modal-body mx-3'>" +
+                                       "<p class='h4 mb-0'><strong>Fecha:</strong> " + fecha.substring(6, 8) + "/" + fecha.substring(4, 6) + "/" + fecha.substring(0, 4) + " " + fecha.substring(8, 10) + ":" + fecha.substring(10, 12) + "</p>" +
                                         "<div class='row'>" +
-                                            "<label class='h4 mb-0 col-2 pr-0'><strong>Monto:</strong></label>" +
-                                            "<input class='form-control col-3 ml-2' min=0 name='monto-nuevo' type='number' value=" + value.monto + " >" +
+                                            "<label class='h4 my-auto col-4 pr-0'><strong>Forma de Pago:</strong></label>" +
+                                            "<select id='select-detalle-forma-pago-" + value.id_detalle_forma_pago + "' class='form-control col-7 ml-2' name='forma-pago-nueva'>" +
+                                                options +
+                                            "</select>" +
                                         "</div>" +
+                                        "<p class='h4 mb-0'><strong>Monto:</strong> " + value.monto + "</p>" +
                                     "</div>" +
                                     "<div class='modal-footer'>" +
                                         "<button type='submit' class='btn btn-bold btn-success'>Actualizar</button>" +
@@ -117,6 +127,8 @@ function getSales(date) {
                     "</div>" +
                 "</form>"
             );
+
+            $("#select-detalle-forma-pago-" + value.id_detalle_forma_pago).val(value.forma_pago.id_forma_pago);
         });
     });
 
@@ -135,7 +147,7 @@ function getSales(date) {
                         "<h6>" + value.nombre + " (" + value.count + ")</h6>" +
                     "</div>" +
                     "<div class='col-7 text-right'>" +
-                        "<h6><strong>+ $ " + (value.suma / 1000).toFixed(3) + "</strong></h6>" +
+                        "<h6><strong>+ $ " + formatMoney(value.suma) + "</strong></h6>" +
                     "</div>"
                 );
             });
@@ -148,7 +160,7 @@ function getSales(date) {
         }
 
         if (total_amount != 0) {
-            $('#total-sales-resume').find('strong').text("$ " + (total_amount / 1000).toFixed(3));
+            $('#total-sales-resume').find('strong').text("$ " + formatMoney(total_amount));
         } else {
             $('#total-sales-resume').find('strong').text("$ 0");
         }

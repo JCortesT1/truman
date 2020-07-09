@@ -1,5 +1,4 @@
 app.ready(function () {
-
     $("#jsgrid-basic").jsGrid({
         height: "100%",
         width: "100%",
@@ -17,13 +16,11 @@ app.ready(function () {
             { name: "descripcion", title: "Producto", type: "text", width: 150 },
             { name: "author.id_autor", title: "Autor", type: "select", items: db.authors, valueField: "id_autor", textField: "nombre", width: 100 },
             { name: "editorial.id_editorial", title: "Editorial", type: "select", items: db.editorials, valueField: "id_editorial", textField: "nombre", width: 100 },
-            // { name: "subfamily.family.descripcion", title: "Familia", type: "text", width: 100 },
-            // { name: "subfamily.descripcion", title: "Subfamilia", type: "text", width: 100 },
             { name: "topic.id_tema", title: "Tema", type: "select", items: db.topics, valueField: "id_tema", textField: "nombre", width: 90 },
             { name: "stock_actual", title: "Stock", type: "number", width: 60, align: "center" },
             { name: "precio", title: "Precio", type: "number", width: 75, align: "center",
                 itemTemplate: function (value) {
-                    return "$ " + (value / 1000).toFixed(3);
+                    return "$ " + formatMoney(value);
                 }
             },
             {
@@ -57,6 +54,76 @@ app.ready(function () {
             }
         }
     });
+
+    $("#jsgrid-tickets").jsGrid({
+        height: "100%",
+        width: "100%",
+        filtering: true,
+        inserting: false,
+        editing: false,
+        sorting: true,
+        paging: true,
+        autoload: true,
+        pageSize: 10,
+        pageButtonCount: 5,
+        noDataContent: "No se encuentran registros",
+        controller: tickets,
+        fields: [
+            { name: "document.id_documento", title: "Documento", type: "select", items: tickets.documents, valueField: "id_documento", textField: "nombre", width: 120, align: "center" },
+            { name: "numero_documento", title: "N° Documento", type: "text", width: 150, align: "center" },
+            {
+                name: "total_bruto", title: "Total", type: "number", width: 75, align: "center",
+                itemTemplate: function (value) {
+                    return "$ " + formatMoney(value);
+                }
+            },
+            {
+                type: "control", editButton: false, modeSwitchButton: false, deleteButton: false, width: 60
+            }
+        ],
+        rowClick: function (args) {
+            console.log(args.item)
+            var ticket = args.item;
+
+            $.each(args.item.detalles_orden_venta, function (index, value) {
+                var html = "<div id='element-" + value.id_producto + "' class='rowElement media flexbox flex-justified'>" +
+                                "<div class='btn-group-vertical'>" +
+                                    "<button onclick='setQuantity(" + value.id_producto + ", &#39;add&#39;)' class='btn btn-pure btn-primary p-0'><i class='fa fa-plus-square fa-2x'></i></button>" +
+                                    "<button onclick='setQuantity(" + value.id_producto + ", &#39;substract&#39;)' class='btn btn-pure btn-primary p-0'><i class='fa fa-minus-square fa-2x'></i></button>" +
+                                "</div>" +
+                                "<input class='quantity' type='number' value='" + value.cantidad + "' min='1'>" +
+                                "<div class='my-auto flex-grow-3'>" +
+                                    "<h5 class'm-0'>" + value.descripcion_producto + "</h5>" +
+                                    "<p class='m-0'>$/unidad: $ <strong>" + formatMoney(value.precio_unitario) + "</strong></p>" +
+                                "</div>" +
+                                "<div class='form-group my-auto ml-0'>" +
+                                    "<select class='form-control' onchange='setDiscount(this, " + value.id_producto + ")' disabled>" +
+                                        "<option value=0>0 %</option>" +
+                                    "</select>" +
+                                "</div>" +
+                                "<h6 class='my-auto'>$ <strong class='unitPrice'>" + formatMoney(value.total) + "</strong></h6>" +
+                                "<a class='btn btn-pure btn-danger p-0 my-auto mx-0' onclick='deleteElement(" + value.id_producto + ")'><i class='fa fa-trash-o fa-2x'></i></a>" +
+                                "<input class='originalPrice' type='hidden' value='" + value.precio_unitario + "'>" +
+                                "<input class='stock-element' type='hidden' value=" + value.cantidad + ">" +
+                                "<input class='id-element-book' type='hidden' value=" + value.id_producto + ">" +
+                            "</div>";
+
+                var html_form = "<div id='element-form-book-" + value.id_producto + "' class='d-none'>" +
+                                    // "<input name='id-inventario[]' type='number' class='d-none form-id-inventario' value=" + element.id_inventario + ">" +
+                                    "<input name='id-producto[]' type='number' class='d-none form-id-producto' value=" + value.id_producto + ">" +
+                                    "<input name='cantidad[]' type='number' class='d-none form-cantidad' value=" + value.cantidad + ">" +
+                                    "<input name='precio-unitario[]' type='number' class='d-none form-precio-unitario' value=" + value.precio_unitario + ">" +
+                                    "<input name='total-libro[]' type='number' class='d-none form-total-libro' value=" + value.total + ">" +
+                                "</div>";
+
+                $('#list').append(
+                    $(html).hide().fadeIn()
+                );
+
+                $('#div-form-books').append(html_form);
+            });
+        }
+    });
 });
 
 function newElement(element) {
@@ -81,14 +148,14 @@ function newElement(element) {
                     "<input class='quantity' type='number' value='1' min='1'>" +
                     "<div class='my-auto flex-grow-3'>" +
                         "<h5 class'm-0'>" + element.descripcion + "</h5>" +
-                        "<p class='m-0'>$/unidad: $ <strong>" + (precio / 1000).toFixed(3) + "</strong></p>" +
+                        "<p class='m-0'>$/unidad: $ <strong>" + formatMoney(precio) + "</strong></p>" +
                     "</div>" +
                     "<div class='form-group my-auto ml-0'>" +
                         "<select class='form-control' onchange='setDiscount(this, " + element.id_producto + ")'>" +
                             "<option value=0>0 %</option>" +
                         "</select>" +
                     "</div>" +
-                    "<h6 class='my-auto'>$ <strong class='unitPrice'>" + (precio * totalDiscount / 1000).toFixed(3) + "</strong></h6>" +
+                    "<h6 class='my-auto'>$ <strong class='unitPrice'>" + formatMoney(precio * totalDiscount) + "</strong></h6>" +
                     "<a class='btn btn-pure btn-danger p-0 my-auto mx-0' onclick='deleteElement(" + element.id_producto + ")'><i class='fa fa-trash-o fa-2x'></i></a>" +
                     "<input class='originalPrice' type='hidden' value='" + element.precio + "'>" +
                     "<input class='stock-element' type='hidden' value=" + element.stock_actual + ">" +
@@ -96,7 +163,7 @@ function newElement(element) {
                 "</div>";
 
     var html_form = "<div id='element-form-book-" + element.id_producto + "' class='d-none'>" +
-                        "<input name='id-inventario[]' type='number' class='d-none form-id-inventario' value=" + element.id_inventario + ">" +
+                        // "<input name='id-inventario[]' type='number' class='d-none form-id-inventario' value=" + element.id_inventario + ">" +
                         "<input name='id-producto[]' type='number' class='d-none form-id-producto' value=" + element.id_producto + ">" +
                         "<input name='cantidad[]' type='number' class='d-none form-cantidad' value=1>" +
                         "<input name='precio-unitario[]' type='number' class='d-none form-precio-unitario' value=" + element.precio + ">" +
@@ -146,7 +213,7 @@ function setQuantity(element, action) {
         }
     }
 
-    item.find('h6').find('strong').text((price * quantity.val() /1000 * discount).toFixed(3));
+    item.find('h6').find('strong').text(formatMoney(price * quantity.val() * discount));
 
     itemform.find('.form-cantidad').val(quantity.val());
     itemform.find('.form-total-libro').val(quantity.val() * price);
@@ -170,7 +237,7 @@ function setDiscount(select, element) {
     var price = item.find('p').find('strong').text() * 1000;
     var discount = 1 - select.value / 100;
 
-    item.find('h6').find('strong').text((price * quantity.val() / 1000 * discount).toFixed(3));
+    item.find('h6').find('strong').text(formatMoney(price * quantity.val() * discount));
 
     itemform.find('.form-total-libro').val(quantity.val() * price * discount);
 
@@ -194,20 +261,10 @@ function calculateTotal() {
             $('#input-total-neto').val(0);
             $('#input-iva').val(0);
         } else {
-            if (net.toString().length > 3) {
-                $('#net').text((net / 1000).toFixed(3));
-            } else {
-                $('#net').text(net);
-            }
+            $('#net').text(formatMoney(net));
             $('#input-total-neto').val(net);
             total = total * tax;
-            console.log("total: " + total);
-            console.log("neto - total: " + (total - net));
-            if ((total - net).toString().length > 3) {
-                $('#tax').text(((total - net) / 1000).toFixed(3));
-            } else {
-                $('#tax').text(total - net);
-            }
+            $('#tax').text(formatMoney(total - net));
             $('#input-iva').val(total - net);
         }
     }
@@ -223,8 +280,8 @@ function calculateTotal() {
     $('#payment-method-amount').val(Math.ceil(total));
 
     if (total.toString().length > 3) {
-        $('#label-total-payment').text("$ " + (total / 1000).toFixed(3));
-        $('#total-payment').text("$ " + (total / 1000).toFixed(3));
+        $('#label-total-payment').text("$ " + formatMoney(total));
+        $('#total-payment').text("$ " + formatMoney(total));
     } else {
         $('#label-total-payment').text("$ " + total);
         $('#total-payment').text("$ " + total);
@@ -234,6 +291,7 @@ function calculateTotal() {
 
 function listEmpty() {
     $('#div-payment').addClass('d-none');
+    $('#div-undo').addClass('d-none');
     $('#div-books').removeClass('d-none');
 
     $('#document').val("BOE");
@@ -249,12 +307,14 @@ function listEmpty() {
     $('#div-payment-method').removeClass('d-none');
     $('#div-paids').empty();
     $('#div-form-books').empty();
+    $("#input-cliente-payment").val(0);
     $('#payment-method-amount').val(0);
     $('#total-paid').text("$ 0");
     $('#change-payment').text("$ 0");
 
     calculateTotal();
     displayPercent();
+    emptyProviders();
 }
 
 function chargeTotalModalPercent() {
@@ -285,7 +345,7 @@ function applyDiscount() {
         var price = $(this).find('p').find('strong').text() * 1000;
         var discount = 1 - $('#totalDiscount').val() / 100;
 
-        $(this).find('h6').find('strong').text((price * quantity.val() / 1000 * discount * porcentDif).toFixed(3));
+        $(this).find('h6').find('strong').text(formatMoney(price * quantity.val() * discount * porcentDif));
         itemform.find('.form-total-libro').val(quantity.val() * price * discount * porcentDif);
     });
 
@@ -293,13 +353,8 @@ function applyDiscount() {
 
     $('#payment-method-amount').val(Math.ceil($('#modal-total-manual').val()));
 
-    if ($('#modal-total-manual').val().toString().length > 3) {
-        $('#label-total-payment').text("$ " + ($('#modal-total-manual').val() / 1000).toFixed(3));
-        $('#total-payment').text("$ " + ($('#modal-total-manual').val() / 1000).toFixed(3));
-    } else {
-        $('#label-total-payment').text("$ " + $('#modal-total-manual').val());
-        $('#total-payment').text("$ " + $('#modal-total-manual').val());
-    }
+    $('#label-total-payment').text("$ " + formatMoney($('#modal-total-manual').val()));
+    $('#total-payment').text("$ " + formatMoney($('#modal-total-manual').val()));
     $('#input-total-bruto').val($('#modal-total-manual').val());
 
     $('#total').val($('#modal-total-manual').val());
@@ -328,6 +383,7 @@ function changeDocument() {
     var typeDocument = $('#document').val();
 
     if (typeDocument == "FE") {
+        $('#div-input-providers').removeClass('d-none');
         $('#div-tax').removeClass('d-none');
         $('.rowElement').each(function(index, value){
             var id_elemento_producto = $(this).find('.id-element-book').val();
@@ -336,16 +392,18 @@ function changeDocument() {
             var selectDiscount = parseInt($(this).find('select').val());
             var discount = 1 - selectDiscount / 100;
             precio =  originalPrice * discount / tax;
-            $(this).find('p strong').text(((originalPrice / tax) / 1000).toFixed(3));
+            $(this).find('p strong').text(formatMoney(originalPrice / tax));
 
             itemform.find('.form-precio-unitario').val(originalPrice / tax);
 
             var quantity = $(this).find('.quantity').val();
-            $(this).find('.unitPrice').text((precio / 1000 * quantity).toFixed(3));
+            $(this).find('.unitPrice').text(formatMoney(precio * quantity));
 
             itemform.find('.form-total-libro').val(precio * quantity);
         });
     } else {
+        $("#input-cliente-payment").val(0);
+        $('#div-input-providers').addClass('d-none');
         $('#div-tax').addClass('d-none');
         $('.rowElement').each(function (index, value) {
             var id_elemento_producto = $(this).find('.id-element-book').val();
@@ -355,11 +413,11 @@ function changeDocument() {
             var discount = 1 - selectDiscount / 100;
             var quantity = $(this).find('.quantity').val();
             precio = originalPrice * discount
-            $(this).find('.unitPrice').text((precio / 1000 * quantity).toFixed(3));
+            $(this).find('.unitPrice').text(formatMoney(precio * quantity));
 
             itemform.find('.form-total-libro').val(precio * quantity);
 
-            $(this).find('p strong').text((originalPrice / 1000).toFixed(3));
+            $(this).find('p strong').text(formatMoney(originalPrice));
 
             itemform.find('.form-precio-unitario').val(originalPrice);
         });
@@ -369,113 +427,20 @@ function changeDocument() {
     calculateTotal();
 }
 
-function displayPayment() {
-    if ($('.rowElement').length == 0) {
-        alert('No se ha registrado nada para vender');
-        return;
-    }
-
-    $('#div-payment').removeClass('d-none');
-    $('#div-books').addClass('d-none');
-
-    $('#label-total-payment').text("$ " + ($('#total').val() / 1000).toFixed(3));
-    $('#input-total-bruto').val($('#total').val());
-    $('#partialTotal').val($('#total').val());
+function displayProviders() {
+    $("#div-providers").removeClass('d-none');
+    $("#div-books").addClass('d-none');
+    $("#div-payment").addClass('d-none');
 }
 
-function addPaymentMethod() {
-    var partialTotal = 0;
-    var total = parseInt($('#total').val());
-    var payMethodAmountValue = $('#payment-method-amount').val()
-    var selectPayMethod = $('#selectPaymentMethod option:selected').html();
-    var selectPayMethodValue = $('#selectPaymentMethod option:selected').val();
-    var paymentMethodAmountLabel;
-
-    if (payMethodAmountValue.length > 3) {
-        paymentMethodAmountLabel = (payMethodAmountValue / 1000).toFixed(3);
-    } else {
-        paymentMethodAmountLabel = payMethodAmountValue;
-    }
-
-    var paymentMethodElement =
-        "<div class='w-50 row form-group border-primary border-bottom row-payment-element'>" +
-            "<h5 class='col-11 my-auto px-0'>" + selectPayMethod + ": ($ " + paymentMethodAmountLabel + ")</h5>" +
-            "<input name='forma-pago[]' type='text' class='d-none' value=" + selectPayMethodValue + ">" +
-            "<input name='monto[]' type='number' class='d-none' value=" + payMethodAmountValue + ">" +
-            "<div class='col-1 px-0'>" +
-                "<a class='btn btn-pure btn-danger mr-4' onclick='removePaymentElement(this)' value='hola' href='#'><i class='fa fa-trash fa-2x'></i></a>" +
-            "</div>" +
-        "</div>";
-
-    $('#div-paids').append(paymentMethodElement);
-
-    $('.row-payment-element').each(function(index, value){
-        partialTotal += parseInt($(this).find('input[type="number"]').val());
-    });
-
-    $('#payment-method-amount').val(total - partialTotal);
-
-    if (partialTotal.toString().length > 3) {
-        $('#total-paid').text("$ " + (partialTotal / 1000).toFixed(3));
-    } else {
-        $('#total-paid').text("$ " + partialTotal);
-    }
-    $('#input-total-pagado').val(partialTotal);
-
-    if (partialTotal > total) {
-        var changePayment = partialTotal - total;
-        if (changePayment.toString().length > 3) {
-            $('#change-payment').text("$ " + (changePayment / 1000).toFixed(3));
-        } else {
-            $('#change-payment').text("$ " + changePayment);
-        }
-        $('#input-total-vuelto').val(changePayment);
-    }
-
-    if ($('#payment-method-amount').val() <= 0) {
-        $('#div-payment-method').addClass('d-none');
-        $('#button-confirmar-pago').prop('disabled', false);
-    }
+function emptyProviders() {
+    $("#text-provider").val("");
+    $("#input-cliente-payment").val(0);
+    $("#button-provider").removeClass('d-none');
+    $("#button-empty-provider").addClass('d-none');
 }
 
-function removePaymentElement(buttonPaymentElement) {
-    var partialTotal = 0;
-    var total = parseInt($('#total').val());
 
-    $(buttonPaymentElement).parents('.row-payment-element').remove();
 
-    $('.row-payment-element').each(function (index, value) {
-        partialTotal += parseInt($(this).find('input[type="number"]').val());
-    });
 
-    $('#payment-method-amount').val(total - partialTotal);
-
-    if (partialTotal.toString().length > 3) {
-        $('#total-paid').text("$ " + (partialTotal / 1000).toFixed(3));
-    } else {
-        $('#total-paid').text("$ " + partialTotal);
-    }
-    $('#input-total-pagado').val(partialTotal);
-
-    if (partialTotal > total) {
-        var changePayment = partialTotal - total;
-        if (changePayment.toString().length > 3) {
-            $('#change-payment').text("$ " + (changePayment / 1000).toFixed(3));
-        } else {
-            $('#change-payment').text("$ " + changePayment);
-        }
-        $('#input-total-vuelto').val(changePayment);
-    } else {
-        $('#change-payment').text("$ 0");
-        $('#input-total-vuelto').val(0);
-    }
-
-    if ($('#payment-method-amount').val() <= 0) {
-        $('#div-payment-method').addClass('d-none');
-        $('#button-confirmar-pago').prop('disabled', false);
-    } else {
-        $('#div-payment-method').removeClass('d-none');
-        $('#button-confirmar-pago').prop('disabled', true);
-    }
-}
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Cliente_Proveedor;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,6 +24,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $clientes = Cliente_Proveedor::where('id_cliente_proveedor','<>', 0)->orderby('nombre')->get();
+        return view('home.home', compact('clientes'));
     }
 }

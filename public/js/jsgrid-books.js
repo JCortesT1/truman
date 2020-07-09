@@ -52,8 +52,6 @@
                 return (!filter.descripcion || product.descripcion.toLowerCase().indexOf(filter.descripcion.toLowerCase()) > -1)
                     && (!filter.author.id_autor || product.author.id_autor === filter.author.id_autor)
                     && (!filter.editorial.id_editorial || product.editorial.id_editorial === filter.editorial.id_editorial)
-                    // && (!filter.subfamily.family.descripcion || product.subfamily.family.descripcion.toLowerCase().indexOf(filter.subfamily.family.descripcion.toLowerCase()) > -1)
-                    // && (!filter.subfamily.descripcion || product.subfamily.descripcion.toLowerCase().indexOf(filter.subfamily.descripcion.toLowerCase()) > -1)
                     && (!filter.topic.id_tema || product.topic.id_tema === filter.topic.id_tema)
                     && (filter.stock_actual === undefined || product.stock_actual === filter.stock_actual)
                     && (filter.precio === undefined || product.precio === filter.precio);

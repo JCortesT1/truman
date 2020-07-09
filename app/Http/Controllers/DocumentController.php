@@ -21,7 +21,7 @@ class DocumentController extends Controller
     public function updateDocument(Request $request, int $id)
     {
         $detalle_forma_pago = Detalle_forma_pago::find($id);
-        $detalle_forma_pago->monto = $request->input('monto-nuevo');
+        $detalle_forma_pago->id_forma_pago = $request->input('forma-pago-nueva');
         $detalle_forma_pago->save();
 
         $fecha = substr($detalle_forma_pago->ordenVenta->fecha_documento, 0, 8);

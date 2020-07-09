@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Detalle_forma_pago;
 use App\Detalle_orden_venta;
 use App\Document;
+use App\inter_mov_salida;
 use App\Forma_pago;
+use App\Inventory;
 use App\Orden_venta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +25,11 @@ class OrdenVentaController extends Controller
      */
     public function index()
     {
-        //
+        return Orden_venta::with([
+            'detallesOrdenVenta',
+            'document'
+        ])
+        ->orderBy('numero_documento', 'desc')->get();
     }
 
     /**
@@ -56,6 +62,7 @@ class OrdenVentaController extends Controller
         }
 
         $orden_venta = Orden_venta::create([
+            'id_cliente_proveedor' => $request->input('cliente-payment'),
             'fecha_documento' => date('YmdHi'),
             'numero_documento' => $ultimoNumero + 1,
             'total_bruto' => round($request->input('total-bruto')),
@@ -69,7 +76,6 @@ class OrdenVentaController extends Controller
 
         $forma_pagos = $request->input('forma-pago');
         $montos = $request->input('monto');
-        $ids_inventarios = $request->input('id-inventario');
         $ids_productos = $request->input('id-producto');
         $cantidades = $request->input('cantidad');
         $precios_unitarios = $request->input('precio-unitario');
@@ -88,30 +94,80 @@ class OrdenVentaController extends Controller
         }
 
         foreach ($ids_productos as $key => $value) {
+            $cantidadLibros = $cantidades[$key];
+
             $detalle_orden_venta = Detalle_orden_venta::create([
                 'id_orden_venta' => $orden_venta->id_orden_venta,
                 'id_producto' => $value,
-                'cantidad' => $cantidades[$key],
+                'cantidad' => $cantidadLibros,
                 'precio_unitario' => round($precios_unitarios[$key]),
                 'total' => round($totales_libros[$key])
-            ]);
+                ]);
 
-            $inventario = DB::table('inventario')->where('id_inventario', $ids_inventarios[$key])->first();
-            $cantidad = $inventario->stock_actual;
-            DB::table('inventario')->where('id_inventario', $ids_inventarios[$key])->update(['stock_actual' => round(($cantidad - $cantidades[$key]))]);
+            $inters = inter_mov_salida::where('id_producto',  $value)
+            ->orderBy('id_bodega')
+            ->orderBy('fecha_ingreso')
+            ->get();
 
+            $auxCantidadLibros = $cantidadLibros;
+            foreach ($inters as $inter) {
+                if ($auxCantidadLibros != 0) {
+                    if ($auxCantidadLibros >= $inter->cantidad) {
+                        $auxCantidadLibros -= $inter->cantidad;
+                        $inter->cantidad = 0;
+                        $inter->save();
+                    } else {
+                        $inter->cantidad = $value->cantidad - $auxCantidadLibros;
+                        $inter->save();
+                        $auxCantidadLibros = 0;
+                    }
+                }
+            }
 
-            DB::table('movimiento_inventario')->insert([
-                'id_inventario' => $ids_inventarios[$key],
-                'id_tipo_movimiento' => 4,
-                'nro_documento' => $detalle_orden_venta->id_detalle_orden_venta,
-                'fecha' => date('Ymd'),
-                'descripcion' => 'VENTA LIBRO',
-                'entrada' => 0,
-                'salida' => $cantidades[$key],
-                'id_usuario' => auth()->user()->id,
-                'id_documento' => $documento->id_documento
-            ]);
+            $inventarios = Inventory::where('id_producto', $value)
+            ->orderBy('id_bodega')
+            ->get();
+
+            $auxCantidadLibros = $cantidadLibros;
+            foreach ($inventarios as $inventario) {
+                if ($auxCantidadLibros != 0) {
+                    if ($auxCantidadLibros >= $inventario->stock_actual) {
+                        $aux_stock_actual = $inventario->stock_actual;
+                        $auxCantidadLibros -= $inventario->stock_actual;
+                        $inventario->stock_actual = 0;
+                        $inventario->save();
+
+                        DB::table('movimiento_inventario')->insert([
+                            'id_inventario' => $inventario->id_inventario,
+                            'id_tipo_movimiento' => 4,
+                            'nro_documento' => $detalle_orden_venta->id_detalle_orden_venta,
+                            'fecha' => date('Ymd'),
+                            'descripcion' => 'VENTA LIBRO',
+                            'entrada' => 0,
+                            'salida' => $aux_stock_actual,
+                            'id_usuario' => auth()->user()->id,
+                            'id_documento' => $documento->id_documento
+                        ]);
+                    } else {
+                        $aux_cantidad_libros_movimiento = $auxCantidadLibros;
+                        $inventario->stock_actual = $inventario->stock_actual - $auxCantidadLibros;
+                        $inventario->save();
+                        $auxCantidadLibros = 0;
+
+                        DB::table('movimiento_inventario')->insert([
+                            'id_inventario' => $inventario->id_inventario,
+                            'id_tipo_movimiento' => 4,
+                            'nro_documento' => $detalle_orden_venta->id_detalle_orden_venta,
+                            'fecha' => date('Ymd'),
+                            'descripcion' => 'VENTA LIBRO',
+                            'entrada' => 0,
+                            'salida' => $aux_cantidad_libros_movimiento,
+                            'id_usuario' => auth()->user()->id,
+                            'id_documento' => $documento->id_documento
+                        ]);
+                    }
+                }
+            }
         }
 
         return redirect()->route('home')->with('status', 'Se registró la venta exitosamente con ' . $documento->nombre . ' N°' . $orden_venta->numero_documento);
